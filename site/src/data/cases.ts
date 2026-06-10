@@ -138,6 +138,18 @@ export const RUNS: Record<string, Record<string, RunDef>> = {
         en: 'Generated in one shot in the Claude web app on Fable 5 Max (max thinking effort).',
       },
     },
+    'gemini-3-1-pro': {
+      note: {
+        zh: '在 Google AI Studio 以 Gemini 3.1 Pro Preview High（最高思考强度）一次生成。',
+        en: 'Generated in Google AI Studio on Gemini 3.1 Pro Preview High (max thinking effort) in one shot.',
+      },
+    },
+    'gemini-3-5-flash': {
+      note: {
+        zh: '在 Google AI Studio 以 Gemini 3.5 Flash High（最高思考强度）一次生成。',
+        en: 'Generated in Google AI Studio on Gemini 3.5 Flash High (max thinking effort) in one shot.',
+      },
+    },
   },
 }
 
