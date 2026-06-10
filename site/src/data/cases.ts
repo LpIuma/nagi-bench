@@ -63,8 +63,8 @@ export const CASES: CaseDef[] = [
       en: 'A playable Minecraft-style 3D voxel world, generated as a single HTML file in one shot.',
     },
     prompt: {
-      zh: '你是一个顶级的资深游戏开发者。请为我使用 HTML5 和 Canvas（或 Three.js）编写一个《我的世界》克隆版。请包含以下核心功能：\n\n1. 一个基于柏林噪声（Perlin Noise）生成的无限或可滚动的 3D 地形。\n2. 第一人称视角，支持使用 WASD 移动和鼠标环视。\n3. 支持至少 3 种方块类型（如：泥土、草地、石头等），并支持鼠标左键破坏方块，右键放置方块。材质要尽可能还原。\n4. 要有一个内置的、极其丰富的神话幻想中的建筑和地形等，由你自行设计。',
-      en: 'You are a top-tier veteran game developer. Build me a Minecraft clone using HTML5 and Canvas (or Three.js). Include the following core features:\n\n1. An infinite or scrollable 3D terrain generated from Perlin noise.\n2. A first-person view with WASD movement and mouse look.\n3. At least 3 block types (e.g. dirt, grass, stone), with left-click to break and right-click to place blocks. Keep the textures as faithful as possible.\n4. A built-in, extremely rich set of mythic-fantasy buildings and terrain, designed at your own discretion.',
+      zh: '你是一个顶级的资深游戏开发者。请为我使用单 HTML5 和 Canvas（或 Three.js）编写一个《我的世界》克隆版。请包含以下核心功能：\n\n1. 一个基于柏林噪声（Perlin Noise）生成的无限或可滚动的 3D 地形。\n2. 第一人称视角，支持使用 WASD 移动和鼠标环视。\n3. 支持至少 3 种方块类型（如：泥土、草地、石头等），并支持鼠标左键破坏方块，右键放置方块。材质要尽可能还原。\n4. 要有一个内置的、极其丰富的神话幻想中的建筑和地形等，由你自行设计。',
+      en: 'You are a top-tier veteran game developer. Build me a Minecraft clone using a single HTML5 file and Canvas (or Three.js). Include the following core features:\n\n1. An infinite or scrollable 3D terrain generated from Perlin noise.\n2. A first-person view with WASD movement and mouse look.\n3. At least 3 block types (e.g. dirt, grass, stone), with left-click to break and right-click to place blocks. Keep the textures as faithful as possible.\n4. A built-in, extremely rich set of mythic-fantasy buildings and terrain, designed at your own discretion.',
     },
     tags: ['HTML', '3D', 'GAME', 'ONE-SHOT'],
   },
