@@ -26,6 +26,10 @@ jobs:
       - name: Build
         run: bun run build
         working-directory: site
+        env:
+          # Optional arena backend (see worker/README.md); empty = local-only votes.
+          VITE_ARENA_API: ${{ vars.VITE_ARENA_API }}
+          VITE_TURNSTILE_SITE_KEY: ${{ vars.VITE_TURNSTILE_SITE_KEY }}
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

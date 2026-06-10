@@ -37,6 +37,12 @@ Pending: Mistral Medium 3.5 · GLM-5.1 · Qwen3.7-Max (PRs welcome)
 
 > This table is a hand-maintained snapshot; the site's registry section is generated live from `models/*.json` and is authoritative.
 
+## Arena blind battles & community board
+
+- Each case defaults to **Arena mode**: two anonymous artifacts battle (A / B / Neither) and identities reveal only after you vote; switch to **Demo Show** to browse everything (tabs are grouped by model — a model with several harnesses can be viewed singly or side by side).
+- Casting 03 votes in each case unlocks the **community leaderboard**, ranked by Bradley-Terry scores (the LMSYS Chatbot Arena approach); "neither" counts separately as both-bad.
+- Votes stay in the browser by default; deploying `worker/` (Cloudflare Worker + D1 + Turnstile, free tier) upgrades the board to sitewide crowdsourced data — see [worker/README.md](./worker/README.md).
+
 ## Structure
 
 ```
