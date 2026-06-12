@@ -34,6 +34,7 @@ NAGI STUDIO 的 LLM 测评案例集：同一段提示词，不同「模型 × Ha
 | Gemini 3.5 Flash | Google | AntiGravity · High<br>Google AI Studio · High | 03 |
 | Grok Build | xAI | Grok Build TUI · Max | 02 |
 | Composer 2.5 | Cursor | Cursor · Max<br>Cursor · Default<br>Grok Build TUI · Default | 05 |
+| Mistral Medium 3.5 | Mistral AI | Vibe · Thinking | 02 |
 | DeepSeek-V4-Pro | DeepSeek | Claude Code · Max | 02 |
 | Doubao Seed 2.0 Pro | ByteDance | Doubao Web · Pro Mode | 01 |
 | Doubao Seed 2.0 Mini | ByteDance | Doubao Web · Fast Mode | 01 |
@@ -41,7 +42,7 @@ NAGI STUDIO 的 LLM 测评案例集：同一段提示词，不同「模型 × Ha
 | Kimi K2.6 | Moonshot AI | Kimi Code · Thinking | 02 |
 | MiniMax M3 | MiniMax | MiniMax Code Web · Thinking | 01 |
 
-待测：Mistral Medium 3.5 · GLM-5.1 · Qwen3.7-Max（欢迎 PR 补充）
+待测：GLM-5.1 · Qwen3.7-Max（欢迎 PR 补充）
 
 > 此表为人工维护的快照；站点上的「模型阵容」表由 `models/*.json` 实时生成，以站点为准。
 

@@ -34,6 +34,7 @@ One-shot LLM eval cases by NAGI STUDIO: same prompt, different model x harness x
 | Gemini 3.5 Flash | Google | AntiGravity · High<br>Google AI Studio · High | 03 |
 | Grok Build | xAI | Grok Build TUI · Max | 02 |
 | Composer 2.5 | Cursor | Cursor · Max<br>Cursor · Default<br>Grok Build TUI · Default | 05 |
+| Mistral Medium 3.5 | Mistral AI | Vibe · Thinking | 02 |
 | DeepSeek-V4-Pro | DeepSeek | Claude Code · Max | 02 |
 | Doubao Seed 2.0 Pro | ByteDance | Doubao Web · Pro Mode | 01 |
 | Doubao Seed 2.0 Mini | ByteDance | Doubao Web · Fast Mode | 01 |
@@ -41,7 +42,7 @@ One-shot LLM eval cases by NAGI STUDIO: same prompt, different model x harness x
 | Kimi K2.6 | Moonshot AI | Kimi Code · Thinking | 02 |
 | MiniMax M3 | MiniMax | MiniMax Code Web · Thinking | 01 |
 
-Pending: Mistral Medium 3.5 · GLM-5.1 · Qwen3.7-Max (PRs welcome)
+Pending: GLM-5.1 · Qwen3.7-Max (PRs welcome)
 
 > This table is a hand-maintained snapshot; the site's registry section is generated live from `models/*.json` and is authoritative.
 

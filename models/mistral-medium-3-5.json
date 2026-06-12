@@ -1,5 +1,23 @@
 {
   "label": "Mistral Medium 3.5",
   "vendor": "Mistral AI",
-  "order": 80
+  "harness": "Vibe",
+  "effort": "Thinking",
+  "order": 80,
+  "runs": {
+    "mythos-craft": {
+      "note": {
+        "zh": "在 Vibe 网页版以 Mistral Medium 3.5（开启 Thinking）一次生成；本页为修复版（仅改 1 行）。问题：初始化时一次性同步生成 RENDER_DISTANCE=4 的 9×9=81 个区块，而每个区块要对 16×16×128 个体素逐一在 mythStructures 数组里做线性查找（再加 6 个相邻面），约 O(体素×建筑)≈ 数十亿次/区块。修复前：加载后主线程被卡死，页面一直停在加载界面、始终无法打开。原因：首屏同步生成量过大且单区块为暴力线性查找，首帧渲染前即阻塞主线程。将 RENDER_DISTANCE 由 4 改为 1（首屏改为同步生成 3×3=9 个区块）后即可正常打开并以 60fps 运行。地形、画面与玩法均为模型原始产出，未作他改。",
+        "en": "Generated in one shot in the Vibe web app on Mistral Medium 3.5 (Thinking enabled); fixed build (1 line changed). Bug: on init the world synchronously builds the full RENDER_DISTANCE=4 ring — a 9x9 = 81-chunk grid — and each chunk runs a linear scan over the mythStructures array for every one of its 16x16x128 voxels (plus six neighbor faces), roughly O(voxels x structures) ≈ billions of ops per chunk. Before the fix: the main thread froze on load and the page stayed on the loading screen, never opening. Cause: the first-screen synchronous generation is far too large and each chunk uses a brute-force linear lookup, blocking the main thread before the first frame. Setting RENDER_DISTANCE from 4 to 1 (a 3x3 = 9-chunk first-screen load) lets it open and run at 60fps. Terrain, visuals and gameplay are the model's original output, otherwise unmodified."
+      },
+      "contributor": "Nagi-ovo"
+    },
+    "pelican-cycling": {
+      "note": {
+        "zh": "在 Vibe 网页版以 Mistral Medium 3.5（开启 Thinking）一次生成，未作修改。",
+        "en": "Generated in one shot in the Vibe web app on Mistral Medium 3.5 (Thinking enabled), unmodified."
+      },
+      "contributor": "Nagi-ovo"
+    }
+  }
 }

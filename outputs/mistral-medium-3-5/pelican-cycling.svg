@@ -1,0 +1,99 @@
+<svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景：海洋和天空 -->
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E0F7FF;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="sea" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1E90FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00BFFF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 天空 -->
+  <rect x="0" y="0" width="800" height="250" fill="url(#sky)" />
+  
+  <!-- 太阳 -->
+  <circle cx="700" cy="80" r="40" fill="#FFD700" />
+  <circle cx="700" cy="80" r="35" fill="#FFE4B5" />
+  
+  <!-- 海洋 -->
+  <rect x="0" y="250" width="800" height="150" fill="url(#sea)" />
+  
+  <!-- 海浪 -->
+  <path d="M0,280 Q100,260 200,280 T400,280 T600,280 T800,280 L800,400 L0,400 Z" fill="#4169E1" opacity="0.7" />
+  <path d="M0,300 Q150,280 300,300 T500,300 T700,300 T800,300 L800,400 L0,400 Z" fill="#4169E1" opacity="0.5" />
+  
+  <!-- 海滩 -->
+  <path d="M0,350 Q400,330 800,350 L800,400 L0,400 Z" fill="#F4A460" />
+  
+  <!-- 鹈鹕 -->
+  <g transform="translate(400, 220)">
+    <!-- 身体 -->
+    <ellipse cx="0" cy="0" rx="60" ry="40" fill="#F5F5F5" stroke="#000" stroke-width="2" />
+    
+    <!-- 头部 -->
+    <ellipse cx="50" cy="-10" rx="30" ry="20" fill="#F5F5F5" stroke="#000" stroke-width="2" />
+    
+    <!-- 眼睛 -->
+    <circle cx="60" cy="-15" r="5" fill="#000" />
+    
+    <!-- 嘴 -->
+    <path d="M80,-5 L100,-10 L80,-15 Z" fill="#FFA500" stroke="#000" stroke-width="1" />
+    <path d="M80,-10 Q90,-20 100,-10" fill="none" stroke="#000" stroke-width="1" />
+    
+    <!-- 翅膀 -->
+    <path d="M-60,0 Q-80,-30 -100,-20 Q-120,-10 -100,0 Q-80,10 -60,0" fill="#F5F5F5" stroke="#000" stroke-width="2" />
+    
+    <!-- 尾巴 -->
+    <path d="M-50,0 Q-70,20 -50,40 Q-30,20 -50,0" fill="#F5F5F5" stroke="#000" stroke-width="2" />
+    
+    <!-- 腿 -->
+    <line x1="-20" y1="30" x2="-20" y2="60" stroke="#FFA500" stroke-width="8" />
+    <line x1="-10" y1="30" x2="-10" y2="60" stroke="#FFA500" stroke-width="8" />
+    
+    <!-- 蹼 -->
+    <ellipse cx="-20" cy="60" rx="5" ry="3" fill="#FFD700" />
+    <ellipse cx="-10" cy="60" rx="5" ry="3" fill="#FFD700" />
+    
+    <!-- 自行车 -->
+    <!-- 车轮 -->
+    <circle cx="-40" cy="40" r="25" fill="#333" />
+    <circle cx="40" cy="40" r="25" fill="#333" />
+    
+    <!-- 车架 -->
+    <path d="M-40,40 L0,20 L40,40" stroke="#555" stroke-width="5" fill="none" />
+    <path d="M0,20 L0,0" stroke="#555" stroke-width="5" fill="none" />
+    
+    <!-- 车把 -->
+    <path d="M0,0 L0,-20" stroke="#555" stroke-width="3" fill="none" />
+    <circle cx="0" cy="-20" r="5" fill="#555" />
+    
+    <!-- 踏板 -->
+    <path d="M-20,10 L-20,0" stroke="#555" stroke-width="3" fill="none" />
+    <path d="M20,10 L20,0" stroke="#555" stroke-width="3" fill="none" />
+    <circle cx="-20" cy="0" r="3" fill="#555" />
+    <circle cx="20" cy="0" r="3" fill="#555" />
+    
+    <!-- 链条 -->
+    <path d="M-40,40 Q0,30 40,40" stroke="#777" stroke-width="2" fill="none" />
+    
+    <!-- 鹈鹕的脚放在踏板上 -->
+    <line x1="-20" y1="30" x2="-20" y2="20" stroke="#FFA500" stroke-width="6" />
+    <line x1="-10" y1="30" x2="-10" y2="20" stroke="#FFA500" stroke-width="6" />
+    
+    <!-- 蹼放在踏板上 -->
+    <ellipse cx="-20" cy="20" rx="4" ry="2" fill="#FFD700" />
+    <ellipse cx="-10" cy="20" rx="4" ry="2" fill="#FFD700" />
+  </g>
+  
+  <!-- 云朵 -->
+  <ellipse cx="150" cy="60" rx="40" ry="20" fill="#FFF" opacity="0.8" />
+  <ellipse cx="180" cy="50" rx="50" ry="25" fill="#FFF" opacity="0.8" />
+  <ellipse cx="120" cy="55" rx="35" ry="18" fill="#FFF" opacity="0.8" />
+  
+  <ellipse cx="600" cy="100" rx="30" ry="15" fill="#FFF" opacity="0.8" />
+  <ellipse cx="630" cy="90" rx="40" ry="20" fill="#FFF" opacity="0.8" />
+  <ellipse cx="570" cy="95" rx="25" ry="12" fill="#FFF" opacity="0.8" />
+</svg>
