@@ -28,10 +28,13 @@ NAGI STUDIO 的 LLM 测评案例集：同一段提示词，不同「模型 × Ha
 |---|---|---|---|
 | Claude Fable 5 | Anthropic | Claude Web App · Max<br>Claude Code · Max<br>Cursor · High | 06 |
 | Claude Opus 4.8 | Anthropic | Claude Code · Max | 02 |
+| Claude Opus 4.7 | Anthropic | Cursor · Max | 02 |
+| Claude Opus 4.6 | Anthropic | Cursor · Max | 02 |
+| Claude Sonnet 4.6 | Anthropic | Cursor · High | 02 |
 | GPT-5.5 Pro | OpenAI | ChatGPT Web · Extended Pro | 02 |
 | GPT-5.5 | OpenAI | Codex CLI · xhigh | 02 |
-| Gemini 3.1 Pro | Google | AntiGravity · High<br>Google AI Studio · High | 03 |
-| Gemini 3.5 Flash | Google | AntiGravity · High<br>Google AI Studio · High | 03 |
+| Gemini 3.1 Pro | Google | AntiGravity · High<br>Cursor · Default<br>Google AI Studio · High | 05 |
+| Gemini 3.5 Flash | Google | AntiGravity · High<br>Google AI Studio · High<br>Cursor · Default | 04 |
 | Grok Build | xAI | Grok Build TUI · Max | 02 |
 | Composer 2.5 | Cursor | Cursor · Max<br>Cursor · Default<br>Grok Build TUI · Default | 05 |
 | Mistral Medium 3.5 | Mistral AI | Vibe · Thinking | 02 |

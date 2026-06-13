@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mythiccraft</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; user-select: none; }
+        #crosshair {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            color: rgba(255,255,255,0.8); font-size: 24px; font-weight: normal; pointer-events: none; text-shadow: 1px 1px 0 #000;
+        }
+        #toolbar {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 8px; background: rgba(0,0,0,0.6); padding: 10px; border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        .slot {
+            width: 50px; height: 50px; border: 3px solid #444; border-radius: 6px;
+            display: flex; align-items: flex-end; justify-content: center; color: white;
+            font-size: 14px; font-weight: bold; text-shadow: 1px 1px 2px black; padding-bottom: 4px;
+            box-sizing: border-box; cursor: pointer; background-size: cover; background-position: center;
+            transition: transform 0.1s; image-rendering: pixelated;
+        }
+        .slot.selected { border-color: #fff; transform: scale(1.15); box-shadow: 0 0 15px rgba(255,255,255,0.5); z-index: 10;}
+        #instructions {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(26, 11, 46, 0.85); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; color: #fff; z-index: 200;
+        }
+        #instructions h1 { font-size: 64px; margin: 0; color: #f5d436; text-shadow: 0 0 20px rgba(245, 212, 54, 0.5); }
+        #instructions p { font-size: 18px; color: #ccc; }
+        #start-btn { 
+            padding: 15px 40px; font-size: 24px; cursor: pointer; margin-top: 30px; 
+            background: #f5d436; color: #1a0b2e; border: none; border-radius: 30px; font-weight: bold;
+            transition: background 0.2s, transform 0.2s;
+        }
+        #start-btn:hover { background: #fff; transform: scale(1.05); }
+        .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 40px; margin-top: 40px; text-align: left; background: rgba(0,0,0,0.4); padding: 20px; border-radius: 10px;}
+        .controls-grid span { color: #f5d436; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="crosshair">+</div>
+    <div id="toolbar">
+        <div class="slot selected" id="slot1">1</div>
+        <div class="slot" id="slot2">2</div>
+        <div class="slot" id="slot3">3</div>
+        <div class="slot" id="slot4">4</div>
+        <div class="slot" id="slot5">5</div>
+        <div class="slot" id="slot6">6</div>
+    </div>
+    <div id="instructions">
+        <h1>Mythiccraft</h1>
+        <p>Explore the roots of the World Tree.</p>
+        <button id="start-btn">Enter World</button>
+        <div class="controls-grid">
+            <div><span>WASD</span> / Arrows to Move</div>
+            <div><span>Left Click</span> to Break Block</div>
+            <div><span>SPACE</span> to Jump</div>
+            <div><span>Right Click</span> to Place Block</div>
+            <div><span>Mouse</span> to Look Around</div>
+            <div><span>1 - 6</span> to Select Block Type</div>
+        </div>
+    </div>
+
+    <!-- Load Three.js and PointerLockControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
+    
+    <script>
+        // --- Perlin Noise Implementation ---
+        class Perlin {
+            constructor() {
+                this.p = new Uint8Array(512);
+                for(let i=0; i<256; i++) this.p[i] = Math.floor(Math.random()*256);
+                for(let i=0; i<256; i++) this.p[256+i] = this.p[i];
+            }
+            fade(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
+            lerp(t, a, b) { return a + t * (b - a); }
+            grad(hash, x, y, z) {
+                let h = hash & 15;
+                let u = h < 8 ? x : y;
+                let v = h < 4 ? y : h === 12 || h === 14 ? x : z;
+                return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v);
+            }
+            noise(x, y, z) {
+                let X = Math.floor(x) & 255, Y = Math.floor(y) & 255, Z = Math.floor(z) & 255;
+                x -= Math.floor(x); y -= Math.floor(y); z -= Math.floor(z);
+                let u = this.fade(x), v = this.fade(y), w = this.fade(z);
+                let A = this.p[X] + Y, AA = this.p[A] + Z, AB = this.p[A + 1] + Z;
+                let B = this.p[X + 1] + Y, BA = this.p[B] + Z, BB = this.p[B + 1] + Z;
+                return this.lerp(w, this.lerp(v, this.lerp(u, this.grad(this.p[AA], x, y, z), this.grad(this.p[BA], x - 1, y, z)),
+                    this.lerp(u, this.grad(this.p[AB], x, y - 1, z), this.grad(this.p[BB], x - 1, y - 1, z))),
+                    this.lerp(v, this.lerp(u, this.grad(this.p[AA + 1], x, y, z - 1), this.grad(this.p[BA + 1], x - 1, y, z - 1)),
+                    this.lerp(u, this.grad(this.p[AB + 1], x, y - 1, z - 1), this.grad(this.p[BB + 1], x - 1, y - 1, z - 1))));
+            }
+        }
+        const perlin = new Perlin();
+
+        // --- Texture Atlas Generator ---
+        let atlasCanvas;
+        function generateAtlas() {
+            atlasCanvas = document.createElement('canvas');
+            atlasCanvas.width = 256; atlasCanvas.height = 256;
+            const ctx = atlasCanvas.getContext('2d');
+            
+            function drawNoise(x, y, w, h, baseColor, varColor, noiseLevel) {
+                ctx.fillStyle = baseColor;
+                ctx.fillRect(x, y, w, h);
+                for(let i=x; i<x+w; i+=2) {
+                    for(let j=y; j<y+h; j+=2) {
+                        if(Math.random() < noiseLevel) {
+                            ctx.fillStyle = Math.random() > 0.5 ? varColor : baseColor;
+                            ctx.fillRect(i, j, 2, 2);
+                        }
+                    }
+                }
+            }
+            
+            // Row 0
+            drawNoise(0, 0, 64, 64, '#3e6b2c', '#4a8035', 0.5); // 0: Grass Top
+            drawNoise(64, 0, 64, 64, '#4a3018', '#382412', 0.5); // 1: Grass Side
+            ctx.fillStyle = '#3e6b2c'; ctx.fillRect(64, 0, 64, 12); 
+            drawNoise(128, 0, 64, 64, '#4a3018', '#382412', 0.5); // 2: Dirt
+            drawNoise(192, 0, 64, 64, '#555555', '#666666', 0.5); // 3: Stone
+            // Row 1
+            drawNoise(0, 64, 64, 64, '#2c1e10', '#1f150b', 0.5); // 4: Wood Side
+            drawNoise(64, 64, 64, 64, '#54402c', '#423222', 0.5); // 5: Wood Top
+            drawNoise(128, 64, 64, 64, '#1c3614', '#12240d', 0.8); // 6: Leaves
+            drawNoise(192, 64, 64, 64, '#f5d436', '#fff17a', 0.6); // 7: Magic (Gold)
+            
+            let tex = new THREE.CanvasTexture(atlasCanvas);
+            tex.magFilter = THREE.NearestFilter;
+            tex.minFilter = THREE.NearestFilter;
+            return tex;
+        }
+
+        // --- Toolbar Icons ---
+        function setToolbarIcons() {
+            let canvas = document.createElement('canvas');
+            canvas.width = 64; canvas.height = 64;
+            let ctx = canvas.getContext('2d');
+            let drawIcon = (id, tx, ty) => {
+                ctx.clearRect(0,0,64,64);
+                ctx.drawImage(atlasCanvas, tx*64, ty*64, 64, 64, 0, 0, 64, 64);
+                document.getElementById('slot' + id).style.backgroundImage = `url(${canvas.toDataURL()})`;
+            };
+            drawIcon(1, 1, 0); // Grass Side
+            drawIcon(2, 2, 0); // Dirt
+            drawIcon(3, 3, 0); // Stone
+            drawIcon(4, 0, 1); // Wood Side
+            drawIcon(5, 2, 1); // Leaves
+            drawIcon(6, 3, 1); // Magic
+        }
+
+        // --- Core Variables ---
+        const chunkWidth = 16, chunkHeight = 160, renderDistance = 3;
+        const chunks = new Map(), chunkMeshes = new Map();
+        let lastChunkX = -999, lastChunkZ = -999;
+        let currentBlockType = 1;
+
+        // --- Three.js Setup ---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x1a0b2e); // Mythical purple night
+        scene.fog = new THREE.FogExp2(0x1a0b2e, 0.015);
+
+        const camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: false });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new THREE.PointerLockControls(camera, renderer.domElement);
+
+        // Lighting
+        const dirLight = new THREE.DirectionalLight(0xaa88ff, 0.7);
+        dirLight.position.set(-100, 150, -50);
+        scene.add(dirLight);
+        const ambientLight = new THREE.AmbientLight(0x403050, 1.0);
+        scene.add(ambientLight);
+
+        // Stars
+        const starsGeo = new THREE.BufferGeometry();
+        const starsPositions = [];
+        for(let i=0; i<2000; i++) {
+            starsPositions.push((Math.random() - 0.5) * 1000, Math.random() * 400 + 50, (Math.random() - 0.5) * 1000);
+        }
+        starsGeo.setAttribute('position', new THREE.Float32BufferAttribute(starsPositions, 3));
+        const starsMat = new THREE.PointsMaterial({color: 0xffffff, size: 1.5});
+        scene.add(new THREE.Points(starsGeo, starsMat));
+
+        // Block Material
+        const material = new THREE.MeshLambertMaterial({ map: generateAtlas(), transparent: true, alphaTest: 0.1 });
+        setToolbarIcons();
+
+        // Active Block Outline
+        const outlineGeo = new THREE.EdgesGeometry(new THREE.BoxGeometry(1.01, 1.01, 1.01));
+        const outlineMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 });
+        const outlineMesh = new THREE.LineSegments(outlineGeo, outlineMat);
+        outlineMesh.visible = false;
+        scene.add(outlineMesh);
+
+        // --- Chunk Generation ---
+        function generateChunk(cx, cz) {
+            let data = new Uint8Array(16 * chunkHeight * 16);
+            let treeX = 0, treeZ = 0;
+            
+            for(let lx = 0; lx < 16; lx++) {
+                for(let lz = 0; lz < 16; lz++) {
+                    let wx = cx * 16 + lx;
+                    let wz = cz * 16 + lz;
+                    
+                    // Base Terrain
+                    let n = perlin.noise(wx * 0.02, 0, wz * 0.02);
+                    let n2 = perlin.noise(wx * 0.005, 0, wz * 0.005);
+                    let h = Math.floor((n * 0.8 + n2 * 1.2) * 15 + 30);
+                    if(h < 2) h = 2;
+                    
+                    for(let y = 0; y < chunkHeight; y++) {
+                        let idx = (lx * 16 + lz) * chunkHeight + y;
+                        if(y === h) data[idx] = 1; // Grass
+                        else if(y < h && y > h - 4) data[idx] = 2; // Dirt
+                        else if(y <= h - 4) data[idx] = 3; // Stone
+                        else data[idx] = 0; // Air
+                    }
+                    
+                    let distToTree = Math.sqrt((wx - treeX)**2 + (wz - treeZ)**2);
+                    
+                    // Yggdrasil Trunk
+                    if(distToTree < 14 - (h * 0.03)) { 
+                        for(let y = h; y < 115; y++) {
+                            data[(lx * 16 + lz) * chunkHeight + y] = 4; // Wood
+                        }
+                    }
+                    
+                    // Roots
+                    if(distToTree >= 12 && distToTree < 40) {
+                        let angle = Math.atan2(wz - treeZ, wx - treeX);
+                        let rootFactor = Math.sin(angle * 7 + distToTree * 0.15);
+                        if(rootFactor > 0.6) {
+                            let rootHeight = h + (40 - distToTree) * 0.4;
+                            for(let y = h; y < rootHeight; y++) {
+                                data[(lx * 16 + lz) * chunkHeight + y] = 4;
+                            }
+                        }
+                    }
+                    
+                    // Canopy
+                    if(distToTree < 55) {
+                        for(let y = 80; y < 150; y++) {
+                            let d3 = Math.sqrt((wx - treeX)**2 + (y - 115)**2 * 2.0 + (wz - treeZ)**2);
+                            if(d3 < 45) {
+                                let idx = (lx * 16 + lz) * chunkHeight + y;
+                                if(data[idx] === 0) { 
+                                    let leafNoise = perlin.noise(wx * 0.15, y * 0.15, wz * 0.15);
+                                    if(leafNoise > -0.2) {
+                                        if(Math.random() < 0.02) data[idx] = 6; // Magic fruit
+                                        else data[idx] = 5; // Leaves
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Floating Islands
+                    if(distToTree > 60 && distToTree < 200) {
+                        let islandNoise = perlin.noise(wx * 0.04, 0, wz * 0.04);
+                        if(islandNoise > 0.72) {
+                            let islandY = 60 + Math.sin(wx * 0.03 + wz * 0.03) * 25;
+                            let islandThickness = (islandNoise - 0.72) * 25;
+                            for(let y = Math.floor(islandY - islandThickness); y <= Math.floor(islandY); y++) {
+                                let idx = (lx * 16 + lz) * chunkHeight + y;
+                                if(y === Math.floor(islandY)) data[idx] = 1;
+                                else data[idx] = 3;
+                            }
+                            // Shrine ruins
+                            if(islandNoise > 0.85 && Math.random() < 0.08) {
+                                for(let sy = 1; sy <= 3; sy++) data[(lx * 16 + lz) * chunkHeight + Math.floor(islandY + sy)] = 3;
+                                data[(lx * 16 + lz) * chunkHeight + Math.floor(islandY + 4)] = 6;
+                            }
+                        }
+                    }
+                }
+            }
+            return data;
+        }
+
+        // --- Data Access ---
+        function getBlock(x, y, z) {
+            if(y < 0 || y >= chunkHeight) return 0;
+            let cx = Math.floor(x / 16), cz = Math.floor(z / 16);
+            let key = cx + ',' + cz;
+            if(!chunks.has(key)) return 0;
+            let lx = x - cx * 16, lz = z - cz * 16;
+            return chunks.get(key)[(lx * 16 + lz) * chunkHeight + y];
+        }
+
+        function setBlock(x, y, z, v) {
+            if(y < 0 || y >= chunkHeight) return;
+            let cx = Math.floor(x / 16), cz = Math.floor(z / 16);
+            let key = cx + ',' + cz;
+            if(!chunks.has(key)) return;
+            let lx = x - cx * 16, lz = z - cz * 16;
+            chunks.get(key)[(lx * 16 + lz) * chunkHeight + y] = v;
+            
+            buildChunkMesh(cx, cz);
+            if(lx === 0) buildChunkMesh(cx - 1, cz);
+            if(lx === 15) buildChunkMesh(cx + 1, cz);
+            if(lz === 0) buildChunkMesh(cx, cz - 1);
+            if(lz === 15) buildChunkMesh(cx, cz + 1);
+        }
+
+        // --- Chunk Meshing ---
+        function getBlockTexture(blockType, faceIndex) {
+            switch(blockType) {
+                case 1: return faceIndex === 2 ? 0 : (faceIndex === 3 ? 2 : 1);
+                case 2: return 2;
+                case 3: return 3;
+                case 4: return (faceIndex === 2 || faceIndex === 3) ? 5 : 4;
+                case 5: return 6;
+                case 6: return 7;
+            }
+            return 0;
+        }
+
+        const faces = [
+            [ [1,1,1], [1,0,1], [1,0,0], [1,1,0] ], // Right X+
+            [ [0,1,0], [0,0,0], [0,0,1], [0,1,1] ], // Left X-
+            [ [0,1,0], [0,1,1], [1,1,1], [1,1,0] ], // Top Y+
+            [ [0,0,1], [0,0,0], [1,0,0], [1,0,1] ], // Bottom Y-
+            [ [0,1,1], [0,0,1], [1,0,1], [1,1,1] ], // Front Z+
+            [ [1,1,0], [1,0,0], [0,0,0], [0,1,0] ]  // Back Z-
+        ];
+        const faceNormals = [ [1,0,0], [-1,0,0], [0,1,0], [0,-1,0], [0,0,1], [0,0,-1] ];
+
+        function buildChunkMesh(cx, cz) {
+            let key = cx + ',' + cz;
+            let data = chunks.get(key);
+            if(!data) return;
+            
+            let positions = [], normals = [], uvs = [], indices = [];
+            let idxCounter = 0;
+            
+            for(let lx = 0; lx < 16; lx++) {
+                for(let lz = 0; lz < 16; lz++) {
+                    for(let y = 0; y < chunkHeight; y++) {
+                        let block = data[(lx * 16 + lz) * chunkHeight + y];
+                        if(block === 0) continue;
+                        
+                        let wx = cx * 16 + lx, wz = cz * 16 + lz;
+                        
+                        for(let f = 0; f < 6; f++) {
+                            let nx = wx + faceNormals[f][0];
+                            let ny = y + faceNormals[f][1];
+                            let nz = wz + faceNormals[f][2];
+                            
+                            let neighborBlock = getBlock(nx, ny, nz);
+                            let drawFace = false;
+                            if (neighborBlock === 0) drawFace = true;
+                            else if (neighborBlock === 5 && block !== 5) drawFace = true;
+                            else if (neighborBlock === 5 && block === 6) drawFace = true;
+                            
+                            if(drawFace) {
+                                let texIndex = getBlockTexture(block, f);
+                                let tu = (texIndex % 4) * 0.25;
+                                let ty = Math.floor(texIndex / 4);
+                                let tv = 1.0 - (ty + 1) * 0.25;
+                                
+                                let fVerts = faces[f];
+                                for(let i=0; i<4; i++) {
+                                    positions.push(wx + fVerts[i][0], y + fVerts[i][1], wz + fVerts[i][2]);
+                                    normals.push(...faceNormals[f]);
+                                    let uu = tu + (i===2 || i===3 ? 0.25 : 0);
+                                    let vv = tv + (i===0 || i===3 ? 0.25 : 0);
+                                    uvs.push(uu, vv);
+                                }
+                                indices.push(idxCounter, idxCounter+1, idxCounter+2, idxCounter, idxCounter+2, idxCounter+3);
+                                idxCounter += 4;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            let geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+            geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+            geometry.setIndex(indices);
+            
+            if(chunkMeshes.has(key)) {
+                scene.remove(chunkMeshes.get(key));
+                chunkMeshes.get(key).geometry.dispose();
+            }
+            if(positions.length > 0) {
+                let mesh = new THREE.Mesh(geometry, material);
+                scene.add(mesh);
+                chunkMeshes.set(key, mesh);
+            } else {
+                chunkMeshes.set(key, new THREE.Mesh()); // Empty placeholder to prevent rebuilds
+            }
+        }
+
+        function updateChunks(playerPos) {
+            let px = Math.floor(playerPos.x / 16), pz = Math.floor(playerPos.z / 16);
+            if(px !== lastChunkX || pz !== lastChunkZ) {
+                lastChunkX = px; lastChunkZ = pz;
+                for(let x = px - renderDistance; x <= px + renderDistance; x++) {
+                    for(let z = pz - renderDistance; z <= pz + renderDistance; z++) {
+                        let key = x + ',' + z;
+                        if(!chunks.has(key)) chunks.set(key, generateChunk(x, z));
+                    }
+                }
+                for(let x = px - renderDistance; x <= px + renderDistance; x++) {
+                    for(let z = pz - renderDistance; z <= pz + renderDistance; z++) {
+                        let key = x + ',' + z;
+                        if(!chunkMeshes.has(key)) buildChunkMesh(x, z);
+                    }
+                }
+                let toDelete = [];
+                for(let [key, mesh] of chunkMeshes) {
+                    let [cx, cz] = key.split(',').map(Number);
+                    if(Math.abs(cx - px) > renderDistance + 1 || Math.abs(cz - pz) > renderDistance + 1) {
+                        scene.remove(mesh);
+                        if(mesh.geometry) mesh.geometry.dispose();
+                        toDelete.push(key);
+                    }
+                }
+                for(let key of toDelete) chunkMeshes.delete(key);
+            }
+        }
+
+        // --- Interaction & UI ---
+        document.getElementById('start-btn').addEventListener('click', () => controls.lock());
+        controls.addEventListener('lock', () => document.getElementById('instructions').style.display = 'none');
+        controls.addEventListener('unlock', () => document.getElementById('instructions').style.display = 'flex');
+
+        let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false, canJump = false;
+        document.addEventListener('keydown', (e) => {
+            switch (e.code) {
+                case 'ArrowUp': case 'KeyW': moveForward = true; break;
+                case 'ArrowLeft': case 'KeyA': moveLeft = true; break;
+                case 'ArrowDown': case 'KeyS': moveBackward = true; break;
+                case 'ArrowRight': case 'KeyD': moveRight = true; break;
+                case 'Space': if(canJump) { velocity.y = 12; canJump = false; } break;
+                case 'Digit1': setBlockType(1); break;
+                case 'Digit2': setBlockType(2); break;
+                case 'Digit3': setBlockType(3); break;
+                case 'Digit4': setBlockType(4); break;
+                case 'Digit5': setBlockType(5); break;
+                case 'Digit6': setBlockType(6); break;
+            }
+        });
+        document.addEventListener('keyup', (e) => {
+            switch (e.code) {
+                case 'ArrowUp': case 'KeyW': moveForward = false; break;
+                case 'ArrowLeft': case 'KeyA': moveLeft = false; break;
+                case 'ArrowDown': case 'KeyS': moveBackward = false; break;
+                case 'ArrowRight': case 'KeyD': moveRight = false; break;
+            }
+        });
+        
+        function setBlockType(type) {
+            currentBlockType = type;
+            document.querySelectorAll('.slot').forEach(el => el.classList.remove('selected'));
+            document.getElementById('slot' + type).classList.add('selected');
+        }
+
+        const raycaster = new THREE.Raycaster();
+        const center = new THREE.Vector2(0, 0);
+        document.addEventListener('mousedown', (e) => {
+            if(!controls.isLocked) return;
+            raycaster.setFromCamera(center, camera);
+            let validMeshes = Array.from(chunkMeshes.values()).filter(m => m.geometry);
+            let intersects = raycaster.intersectObjects(validMeshes);
+            
+            if(intersects.length > 0 && intersects[0].distance < 8) {
+                let intersect = intersects[0];
+                let normal = intersect.face.normal;
+                
+                if(e.button === 0) { // Break
+                    let bx = Math.floor(intersect.point.x - normal.x * 0.5);
+                    let by = Math.floor(intersect.point.y - normal.y * 0.5);
+                    let bz = Math.floor(intersect.point.z - normal.z * 0.5);
+                    if(by > 0) setBlock(bx, by, bz, 0);
+                } else if(e.button === 2) { // Place
+                    let bx = Math.floor(intersect.point.x + normal.x * 0.5);
+                    let by = Math.floor(intersect.point.y + normal.y * 0.5);
+                    let bz = Math.floor(intersect.point.z + normal.z * 0.5);
+                    
+                    let cx = Math.floor(camera.position.x), cz = Math.floor(camera.position.z);
+                    let cy = Math.floor(camera.position.y), cyF = Math.floor(camera.position.y - 1.6);
+                    if(bx === cx && bz === cz && (by === cy || by === cyF)) return; // Prevent placing in player
+                    
+                    if(by > 0 && by < chunkHeight - 1) setBlock(bx, by, bz, currentBlockType);
+                }
+            }
+        });
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        // --- Physics & Loop ---
+        let velocity = new THREE.Vector3();
+        let direction = new THREE.Vector3();
+        const clock = new THREE.Clock();
+        const playerHeight = 1.6;
+
+        function checkCollision(pos) {
+            let x0 = Math.floor(pos.x - 0.3), x1 = Math.floor(pos.x + 0.3);
+            let z0 = Math.floor(pos.z - 0.3), z1 = Math.floor(pos.z + 0.3);
+            let y0 = Math.floor(pos.y - playerHeight), y1 = Math.floor(pos.y + 0.2);
+            for(let x = x0; x <= x1; x++) {
+                for(let y = y0; y <= y1; y++) {
+                    for(let z = z0; z <= z1; z++) {
+                        if(getBlock(x, y, z) !== 0) return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // Initial Spawn
+        camera.position.set(0, 100, 70); // Spawn in front of the tree
+        updateChunks(camera.position);
+        let startY = 150;
+        while(getBlock(0, startY, 70) === 0 && startY > 0) startY--;
+        camera.position.set(0, startY + playerHeight + 1, 70);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (controls.isLocked) {
+                let delta = Math.min(clock.getDelta(), 0.1);
+                
+                velocity.x -= velocity.x * 10.0 * delta;
+                velocity.z -= velocity.z * 10.0 * delta;
+                velocity.y -= 35.0 * delta; // Gravity
+
+                direction.z = Number(moveForward) - Number(moveBackward);
+                direction.x = Number(moveRight) - Number(moveLeft);
+                direction.normalize();
+
+                let speed = 50.0;
+                if (moveForward || moveBackward) velocity.z -= direction.z * speed * delta;
+                if (moveLeft || moveRight) velocity.x -= direction.x * speed * delta;
+
+                let cObj = controls.getObject();
+                let prevPos = cObj.position.clone();
+                
+                controls.moveRight(-velocity.x * delta);
+                controls.moveForward(-velocity.z * delta);
+                
+                if(checkCollision(cObj.position)) {
+                    let tx = cObj.position.x, tz = cObj.position.z;
+                    cObj.position.set(tx, prevPos.y, prevPos.z);
+                    if(checkCollision(cObj.position)) { cObj.position.x = prevPos.x; velocity.x = 0; }
+                    cObj.position.set(cObj.position.x, prevPos.y, tz);
+                    if(checkCollision(cObj.position)) { cObj.position.z = prevPos.z; velocity.z = 0; }
+                }
+                
+                cObj.position.y += velocity.y * delta;
+                if(checkCollision(cObj.position)) {
+                    if(velocity.y < 0) {
+                        canJump = true;
+                        cObj.position.y = Math.floor(cObj.position.y - playerHeight) + 1 + playerHeight + 0.001;
+                    } else {
+                        cObj.position.y = Math.floor(cObj.position.y + 0.2) - 0.201;
+                    }
+                    velocity.y = 0;
+                } else {
+                    canJump = false;
+                }
+                
+                updateChunks(cObj.position);
+
+                // Update Outline
+                raycaster.setFromCamera(center, camera);
+                let validMeshes = Array.from(chunkMeshes.values()).filter(m => m.geometry);
+                let intersects = raycaster.intersectObjects(validMeshes);
+                if(intersects.length > 0 && intersects[0].distance < 8) {
+                    let pt = intersects[0].point, nm = intersects[0].face.normal;
+                    outlineMesh.position.set(
+                        Math.floor(pt.x - nm.x * 0.5) + 0.5,
+                        Math.floor(pt.y - nm.y * 0.5) + 0.5,
+                        Math.floor(pt.z - nm.z * 0.5) + 0.5
+                    );
+                    outlineMesh.visible = true;
+                } else {
+                    outlineMesh.visible = false;
+                }
+            } else {
+                clock.getDelta();
+            }
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>

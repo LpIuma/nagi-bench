@@ -1,0 +1,24 @@
+{
+  "label": "Claude Sonnet 4.6",
+  "vendor": "Anthropic",
+  "harness": "Cursor",
+  "effort": "High",
+  "artifactDir": "claude-sonnet-4-6/cursor-high",
+  "order": 18,
+  "runs": {
+    "mythos-craft": {
+      "note": {
+        "zh": "在 Cursor 中以 Claude Sonnet 4.6（High 思考配额）一次生成；本页为未经修改的原始产出。",
+        "en": "Generated in one shot by Claude Sonnet 4.6 (High effort) inside Cursor; unmodified original output."
+      },
+      "contributor": "jessezhang"
+    },
+    "pelican-cycling": {
+      "note": {
+        "zh": "在 Cursor 中以 Claude Sonnet 4.6（High 思考配额）一次生成；本页为未经修改的原始产出。",
+        "en": "Generated in one shot by Claude Sonnet 4.6 (High effort) inside Cursor; unmodified original output."
+      },
+      "contributor": "jessezhang"
+    }
+  }
+}
