@@ -39,7 +39,7 @@ NAGI STUDIO 的 LLM 测评案例集：同一段提示词，不同「模型 × Ha
 | Gemini 3.1 Pro | Google | AntiGravity · High<br>Cursor · Default<br>Google AI Studio · High | 04 |
 | Gemini 3.5 Flash | Google | AntiGravity · High<br>Google AI Studio · High<br>Cursor · Default | 04 |
 | Grok Build | xAI | Grok Build TUI · Max | 02 |
-| Grok 4.3 | xAI | Cursor · Default | 01 |
+| Grok 4.3 | xAI | Cursor · Default | 02 |
 | Composer 2.5 | Cursor | Cursor · Max<br>Cursor · Default<br>Grok Build TUI · Default | 05 |
 | Mistral Medium 3.5 | Mistral AI | Vibe · Thinking | 02 |
 | DeepSeek-V4-Pro | DeepSeek | Claude Code · Max | 02 |
