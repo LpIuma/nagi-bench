@@ -6,12 +6,22 @@
   "artifactDir": "minimax-m3/minimax-code-web-thinking",
   "order": 110,
   "runs": {
-    "pelican-cycling": {
-      "note": {
-        "zh": "在 MiniMax Code 网页版以 MiniMax M3（开启思考模式 Thinking）一次生成。",
-        "en": "Generated in one shot by MiniMax M3 (Thinking mode on) in the MiniMax Code web app."
+    "pelican-cycling": [
+      {
+        "note": {
+          "zh": "在 MiniMax Code 网页版以 MiniMax M3（开启思考模式 Thinking）一次生成。",
+          "en": "Generated in one shot by MiniMax M3 (Thinking mode on) in the MiniMax Code web app."
+        },
+        "contributor": "Nagi-ovo"
       },
-      "contributor": "Nagi-ovo"
-    }
+      {
+        "file": "pelican-cycling-2.svg",
+        "note": {
+          "zh": "在 MiniMax Code 网页版以 MiniMax M3（开启思考模式 Thinking）一次生成的第二个 SVG 版本。",
+          "en": "Second SVG variant generated in one shot by MiniMax M3 (Thinking mode on) in the MiniMax Code web app."
+        },
+        "contributor": "Nagi-ovo"
+      }
+    ]
   }
 }
