@@ -34,7 +34,7 @@ NAGI STUDIO 的 LLM 测评案例集：同一段提示词，不同「模型 × Ha
 | Claude Opus 4.7 | Anthropic | Cursor · Max | 02 |
 | Claude Opus 4.6 | Anthropic | Cursor · Max | 02 |
 | Claude Opus 4.5 | Anthropic | Cursor · Thinking | 02 |
-| Claude Sonnet 4.6 | Anthropic | Cursor · High | 01 |
+| Claude Sonnet 4.6 | Anthropic | Claude Code · Max<br>Cursor · High | 03 |
 | GPT-5.5 Pro | OpenAI | ChatGPT Web · Extended Pro | 02 |
 | GPT-5.5 | OpenAI | Codex CLI · xhigh | 02 |
 | GPT-5.4 | OpenAI | Cursor · xhigh<br>Codex CLI · xhigh | 05 |
