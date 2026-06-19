@@ -19,6 +19,13 @@
         "en": "Contributed via community PR #3 (a Codex workflow); the submitter did not specify the runtime or effort level."
       },
       "contributor": "XA2333"
+    },
+    "skeleton-watch": {
+      "note": {
+        "zh": "在 Codex CLI 中以 GPT-5.5（xhigh 思考档位，未使用任何 skill）一次生成；本页为未经修改的原始产出。提示词开头明确禁止阅读或参考本目录及仓库中的任何其它文件，要求完全凭模型自身知识独立完成。",
+        "en": "Generated in one shot by GPT-5.5 (xhigh effort, no skills) in Codex CLI; unmodified original output. The prompt explicitly forbade reading or referencing any other file in the directory or repository, requiring the model to work solely from its own knowledge."
+      },
+      "contributor": "Nagi-ovo"
     }
   }
 }
