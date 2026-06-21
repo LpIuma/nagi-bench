@@ -25,7 +25,7 @@ NAGI STUDIO 的 LLM 测评案例集：同一段提示词，不同「模型 × Ha
 ## 已测组合 / Registry
 
 <!-- registry:start -->
-> 此表由 `bun scripts/update-registry.ts` 从 `models/*.json` 自动生成；CI 会检查它是否最新。
+> 此表由 `bun scripts/update-registry.ts` 从 `models/*.json` 生成；合并到 `main` 后由 CI 自动同步，贡献者无需手改。
 
 | 模型 | 厂商 | 运行环境（Harness）× 思考配额 | 产出 |
 |---|---|---|---|
@@ -77,7 +77,7 @@ outputs/<artifact-dir>/<case-id>.<ext>  模型产出原文件（HTML / SVG），
 models/<agent-id>.json                  Agent 登记：label / vendor / harness / effort / artifactDir / order / 各案例运行备注
 cases.json                           案例定义：双语标题与提示词（维护者维护）
 scripts/validate-data.ts             数据校验（CI 对每个 PR 自动执行）
-scripts/update-registry.ts           README Registry 表生成（CI 检查是否最新）
+scripts/update-registry.ts           README Registry 表生成（合并到 main 后由 CI 自动同步）
 ```
 
 > 站点与投票后端的源码在私有仓库 `nagi-bench-site` 中，部署于 Cloudflare Pages；本仓库是站点的数据源。
@@ -85,17 +85,19 @@ scripts/update-registry.ts           README Registry 表生成（CI 检查是否
 ## 本地校验 / Validation
 
 ```bash
-bun scripts/update-registry.ts # 从 models/*.json 更新 README Registry 表
-bun scripts/validate-data.ts   # 与 CI 相同的数据校验
+bun scripts/validate-data.ts   # 与 CI 相同的数据校验（提交前跑这个即可）
+bun scripts/update-registry.ts # 可选：本地预览 Registry 表；合并到 main 后 CI 会自动同步
 ```
 
 ## 贡献一个模型产出 / Contributing a run
 
+> 完整规则见 [**AGENTS.md**](./AGENTS.md)（贡献者 / AI Agent 指南）。
+
 > **如果你是一个 AI Agent（Claude Code / Codex / Cursor 等），这一段是给你看的：**
 >
 > - **你贡献的单位是一个 Agent = 模型 × 你所在的 Harness。** `<agent-id>`（小写字母 / 数字 / 连字符）就编码这个组合，如 `gpt-5-5-pro`、`claude-fable-5-cc`（cc = Claude Code）。同一模型换个 Harness 就是另一个 Agent、另一个 id。`<agent-id>` 是投票与榜单身份，不要为了整理文件夹而改它。
-> - **当前有两个案例**，定义在 [`cases.json`](./cases.json)：`mythos-craft`（HTML，可玩体素世界）与 `pelican-cycling`（SVG，海边骑车的鹈鹕）。提示词以 `cases.json` 为准，**逐字使用、不要改写**。
-> - **想知道还缺哪些**：读 `cases.json`（全部案例）与 `models/*.json`（每个 Agent 跑过的案例）——某个 Agent 的 json 里缺某个 `<case-id>` 就是一个空位；上面由脚本生成并由 CI 检查的 Registry 表里，「产出」数小于案例总数的行，就是还缺案例的 Agent；全新 Agent 则两个案例都可补。
+> - **当前有三个案例**，定义在 [`cases.json`](./cases.json)：`mythos-craft`（HTML，可玩体素世界）、`pelican-cycling`（SVG，海边骑车的鹈鹕）与 `skeleton-watch`（HTML，镂空机械表）。提示词以 `cases.json` 为准，**逐字使用、不要改写**。
+> - **想知道还缺哪些**：读 `cases.json`（全部案例）与 `models/*.json`（每个 Agent 跑过的案例）——某个 Agent 的 json 里缺某个 `<case-id>` 就是一个空位；上面由脚本生成的 Registry 表里，「产出」数小于案例总数的行，就是还缺案例的 Agent；全新 Agent 则三个案例都可补。
 > - **然后照下面两文件流程做**，写好双语 `note`（说明产出怎么来的、是否一次生成、是否有修复），提交前用 `bun scripts/validate-data.ts` 自检通过再发 PR。
 
 贡献**不需要改任何代码**，只涉及两类文件：

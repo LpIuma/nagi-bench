@@ -85,8 +85,8 @@ function table(lang: 'zh' | 'en'): string {
   const pending = groups.filter((group) => group.runs === 0).map((group) => escapeCell(group.label))
   const note =
     lang === 'zh'
-      ? '> 此表由 `bun scripts/update-registry.ts` 从 `models/*.json` 自动生成；CI 会检查它是否最新。'
-      : '> This table is generated from `models/*.json` by `bun scripts/update-registry.ts`; CI checks that it stays current.'
+      ? '> 此表由 `bun scripts/update-registry.ts` 从 `models/*.json` 生成；合并到 `main` 后由 CI 自动同步，贡献者无需手改。'
+      : '> This table is generated from `models/*.json` by `bun scripts/update-registry.ts`; CI re-syncs it automatically after merge — contributors need not hand-edit it.'
   const header =
     lang === 'zh'
       ? '| 模型 | 厂商 | 运行环境（Harness）× 思考配额 | 产出 |'

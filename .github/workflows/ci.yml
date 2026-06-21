@@ -14,10 +14,34 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
-      - name: Check README registry
-        run: bun scripts/update-registry.ts --check
       - name: Validate contribution data
         run: bun scripts/validate-data.ts
+
+  sync-registry:
+    # The README Registry tables are generated from models/*.json. Contributors
+    # do not edit them by hand; on every push to main we regenerate and commit
+    # any drift back. Commits pushed with GITHUB_TOKEN do not retrigger
+    # workflows, and the message carries [skip ci] too, so there is no loop.
+    if: github.event_name == 'push'
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Regenerate README registry
+        run: bun scripts/update-registry.ts
+      - name: Commit if registry drifted
+        run: |
+          if git diff --quiet -- README.md README.en.md; then
+            echo "Registry already in sync."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore: sync README registry [skip ci]"
+          git push origin HEAD:main
 
   trigger-site-rebuild:
     # The site lives in the private nagi-bench-site repo (Cloudflare Pages).
