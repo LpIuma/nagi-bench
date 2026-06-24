@@ -71,6 +71,18 @@ Every run needs `note.zh` + `note.en` documenting provenance: which harness,
 which effort, one-shot or fixed. If you applied any fix, say where the bug was
 and what you changed. **No emojis anywhere** (hard rule). zh first.
 
+### Run the harness as it ships / 用 harness 开箱即用的默认形态
+
+Use the harness in its **default, out-of-the-box** configuration: no extra
+skills, plugins, MCP servers or custom system prompts beyond what it bundles.
+These shift the output as much as swapping the harness does, so loading them
+makes the run no longer comparable to others under the same harness. If you used
+any, it is a different setup — say so explicitly in `note`, otherwise it does
+not belong on the board.
+（用 harness 的**默认形态**：不要额外加载 harness 自带以外的 skill / 插件 /
+MCP / 自定义系统提示——它们对产出的影响不亚于换 harness，会让这条 run 失去与
+同一 harness 下其它条目的可比性。确实用了就在 `note` 里写清楚，否则不该上榜。）
+
 ## Before you open the PR / 提交前
 
 ```bash
