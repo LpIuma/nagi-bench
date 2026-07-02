@@ -54,6 +54,7 @@ NAGI STUDIO 的 LLM 测评案例集：同一段提示词，不同「模型 × Ha
 | DeepSeek-V4-Pro | DeepSeek | Claude Code · Max | 03 |
 | Doubao Seed 2.0 Pro | ByteDance | Doubao Web · Pro Mode | 01 |
 | Doubao Seed 2.0 Mini | ByteDance | Doubao Web · Fast Mode | 01 |
+| MiMo V2.5 | Xiaomi | MiMo Code · High | 03 |
 | MiMo v2.5 Pro | Xiaomi | Claude Code · Max<br>MiMo Code · Max | 03 |
 | MiMo v2.5 Pro UltraSpeed | Xiaomi | Web · Default | 05 |
 | Kimi K2.7-Code | Moonshot AI | Kimi Code · Thinking | 03 |
