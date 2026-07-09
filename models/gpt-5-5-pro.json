@@ -4,7 +4,7 @@
   "harness": "ChatGPT Web",
   "effort": "Extended Pro",
   "artifactDir": "gpt-5-5-pro/chatgpt-web-extended-pro",
-  "order": 20,
+  "order": 29.8,
   "runs": {
     "mythos-craft": {
       "note": {
