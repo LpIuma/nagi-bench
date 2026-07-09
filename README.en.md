@@ -39,6 +39,7 @@ One-shot LLM eval cases by NAGI STUDIO: same prompt, different model x harness x
 | Claude Haiku 4.5 | Anthropic | Claude Code · Default | 02 |
 | GLM-5.1 | Zhipu AI | ZCode · Max | 01 |
 | GPT-5.5 Pro | OpenAI | ChatGPT Web · Extended Pro | 03 |
+| GPT-5.6-Sol | OpenAI | Codex CLI · ultra | 03 |
 | GPT-5.5 | OpenAI | Codex CLI · xhigh | 03 |
 | GPT-5.4 | OpenAI | Cursor · xhigh<br>Codex CLI · xhigh | 06 |
 | GPT-5.3 Codex | OpenAI | Cursor · xhigh | 02 |
@@ -46,6 +47,7 @@ One-shot LLM eval cases by NAGI STUDIO: same prompt, different model x harness x
 | Gemini 3.1 Pro | Google | AntiGravity · High<br>Cursor · Default<br>Gemini Web · Deep Think<br>Google AI Studio · High | 09 |
 | DeepSeek V4 Flash | DeepSeek | Reasonix · Max | 01 |
 | Gemini 3.5 Flash | Google | AntiGravity · High<br>Cursor · Default<br>Google AI Studio · High | 06 |
+| Grok 4.5 | xAI | Grok Build TUI · High | 03 |
 | Grok Build | xAI | Grok Build TUI · Max | 02 |
 | Nex-N2-Pro | Nex-AGI | Claude Code · Max | 02 |
 | Grok 4.3 | xAI | Cursor · Default | 02 |
