@@ -65,6 +65,35 @@ The same model under a different **harness** or **effort** is a **separate**
 "Cursor", "Claude Code", "AntiGravity" name the **harness**, never the model.
 （同一模型换 harness 或 effort = **新建** JSON，不要塞进现有条目。）
 
+### Multiple takes of one case / 同一 case 留多版
+
+Ran the **same** model × harness × effort on a case more than once and want to
+keep several outputs? Make `runs.<case-id>` an **array** — this is the *only*
+case where extra artifacts live inside one entry (a different harness/effort is
+still a new file, per above):
+
+```jsonc
+"runs": {
+  "pelican-cycling": [
+    { "note": { "zh": "…", "en": "…" }, "contributor": "alice" },
+    { "file": "pelican-coastal-ride.svg", "note": { "zh": "…", "en": "…" }, "contributor": "bob" }
+  ]
+}
+```
+
+- The **first** variant may omit `file` (defaults to `<case-id>.<ext>`); **every
+  extra** variant needs its own distinct, descriptive dash-case `file`
+  (`pelican-coastal-ride.svg`). Two variants may not resolve to the same file.
+- **Never name an artifact `index.html`** — it is served as the folder's default
+  page. Use the case name plus a short suffix (`mythos-craft-block-era.html`).
+- Each variant carries its own `note` and may set its own `contributor`, so
+  different people can add takes to the same model entry.
+
+（同一 **model × harness × effort** 想留多张，就把 `runs.<case>` 写成**数组**，别新建
+JSON——这是唯一能把多份产物塞进一个条目的情形。第一版可省略 `file`，其余每版都要有
+各自不同、描述性的 dash-case `file` 名；**别用 `index.html`**（会被当成目录默认页）。
+每版各自带 note，可各自署名 contributor。）
+
 ### The `note` is required and bilingual / note 必须双语
 
 Every run needs `note.zh` + `note.en` documenting provenance: which harness,
