@@ -1,0 +1,31 @@
+{
+  "label": "GPT-5.6-Terra",
+  "vendor": "OpenAI",
+  "harness": "Codex CLI",
+  "effort": "ultra",
+  "artifactDir": "gpt-5-6-terra/codex-cli-ultra",
+  "order": 29.5,
+  "runs": {
+    "mythos-craft": {
+      "note": {
+        "zh": "GPT-5.6-Terra（ultra 思考档位）在 Codex CLI 中用仓库标准中文提示词一次生成，未经人工修改。此版为『阿斯特拉：方块神话』主题的沙盒建造。",
+        "en": "One-shot by GPT-5.6-Terra (ultra effort) in Codex CLI from the repository's canonical Chinese prompt, with no human edits. An 'Astra: Block Myth' sandbox-building take."
+      },
+      "contributor": "Nagi-ovo"
+    },
+    "pelican-cycling": {
+      "note": {
+        "zh": "GPT-5.6-Terra（ultra 思考档位）在 Codex CLI 中用仓库标准中文提示词一次生成，未经人工修改。海边骑行鹈鹕 SVG。",
+        "en": "One-shot by GPT-5.6-Terra (ultra effort) in Codex CLI from the repository's canonical Chinese prompt, with no human edits. A seaside pelican-on-bicycle SVG."
+      },
+      "contributor": "Nagi-ovo"
+    },
+    "skeleton-watch": {
+      "note": {
+        "zh": "GPT-5.6-Terra（ultra 思考档位）在 Codex CLI 中用仓库标准中文提示词一次生成，未经人工修改。镂空机械腕表交互演示。",
+        "en": "One-shot by GPT-5.6-Terra (ultra effort) in Codex CLI from the repository's canonical Chinese prompt, with no human edits. An interactive skeleton mechanical-watch demo."
+      },
+      "contributor": "Nagi-ovo"
+    }
+  }
+}

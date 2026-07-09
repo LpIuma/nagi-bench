@@ -1,0 +1,1605 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>机械镂空腕表</title>
+  <style>
+    :root {
+      --ink: #eaf5ef;
+      --muted: #93aaa0;
+      --line: rgba(196, 236, 219, 0.15);
+      --panel: rgba(11, 23, 22, 0.76);
+      --panel-solid: #0d1918;
+      --accent: #6ee2bd;
+      --accent-soft: rgba(110, 226, 189, 0.18);
+      --chrome: #bfd1cb;
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #06100f;
+      color: var(--ink);
+      font-family: "SF Pro Display", "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+
+    body {
+      background:
+        radial-gradient(ellipse at 50% 42%, rgba(35, 78, 69, 0.28), transparent 36%),
+        radial-gradient(ellipse at 12% 14%, rgba(73, 108, 98, 0.16), transparent 26%),
+        linear-gradient(135deg, #071312 0%, #07100f 48%, #0a1514 100%);
+    }
+
+    #experience {
+      position: relative;
+      width: 100%;
+      min-height: 100dvh;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    #experience::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.58;
+      background:
+        repeating-linear-gradient(90deg, rgba(190, 241, 217, 0.017) 0 1px, transparent 1px 7px),
+        repeating-linear-gradient(0deg, rgba(190, 241, 217, 0.012) 0 1px, transparent 1px 9px);
+      mask-image: radial-gradient(circle at 50% 45%, black, transparent 73%);
+    }
+
+    #watch-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      touch-action: none;
+      cursor: grab;
+      outline: none;
+    }
+
+    #watch-canvas:active { cursor: grabbing; }
+
+    .topbar {
+      position: absolute;
+      z-index: 3;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 28px 34px;
+      pointer-events: none;
+    }
+
+    .brand {
+      display: grid;
+      gap: 6px;
+      user-select: none;
+    }
+
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      color: #f4fcf8;
+      font-size: 12px;
+      font-weight: 650;
+      letter-spacing: 0.23em;
+      text-transform: uppercase;
+    }
+
+    .brand-mark::before {
+      content: "";
+      width: 22px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent));
+      box-shadow: 0 0 12px rgba(110, 226, 189, 0.46);
+    }
+
+    .brand-sub {
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+    }
+
+    .live-status {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 30px;
+      padding: 7px 11px 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(13, 27, 25, 0.48);
+      box-shadow: inset 0 1px 0 rgba(235, 255, 245, 0.06);
+      color: #bed1c8;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+      backdrop-filter: blur(16px) saturate(125%);
+      -webkit-backdrop-filter: blur(16px) saturate(125%);
+    }
+
+    .live-status i {
+      display: block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(110, 226, 189, 0.85);
+    }
+
+    .info-panel {
+      position: absolute;
+      z-index: 4;
+      top: 104px;
+      right: 32px;
+      width: min(310px, calc(100vw - 64px));
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(145deg, rgba(30, 57, 52, 0.27), transparent 52%),
+        var(--panel);
+      box-shadow:
+        inset 0 1px 0 rgba(245, 255, 250, 0.09),
+        0 18px 60px rgba(0, 0, 0, 0.22);
+      backdrop-filter: blur(18px) saturate(130%);
+      -webkit-backdrop-filter: blur(18px) saturate(130%);
+      transition: border-color 360ms ease, transform 360ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .info-panel[data-selected="true"] {
+      border-color: rgba(110, 226, 189, 0.42);
+      transform: translateY(-2px);
+    }
+
+    .panel-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 18px 19px 16px;
+      border-bottom: 1px solid rgba(196, 236, 219, 0.1);
+    }
+
+    .panel-kicker {
+      margin: 0 0 7px;
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 650;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .panel-title {
+      margin: 0;
+      color: #f0faf4;
+      font-size: 20px;
+      font-weight: 620;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+    }
+
+    .panel-state {
+      margin-top: 2px;
+      flex: 0 0 auto;
+      max-width: 92px;
+      padding: 5px 7px;
+      border: 1px solid rgba(110, 226, 189, 0.25);
+      border-radius: 7px;
+      color: #b4dacf;
+      background: rgba(110, 226, 189, 0.08);
+      font-size: 10px;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    .panel-body {
+      padding: 15px 19px 18px;
+    }
+
+    .panel-body p {
+      margin: 0;
+      color: #b8cac3;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .part-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 15px;
+    }
+
+    .part-tags span {
+      padding: 5px 7px;
+      border: 1px solid rgba(196, 236, 219, 0.12);
+      border-radius: 7px;
+      background: rgba(4, 13, 12, 0.3);
+      color: #a7beb5;
+      font-size: 10px;
+      line-height: 1.1;
+    }
+
+    .panel-hint {
+      margin-top: 15px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(196, 236, 219, 0.09);
+      color: #6e897e;
+      font-size: 10px;
+      line-height: 1.55;
+    }
+
+    .controls {
+      position: absolute;
+      z-index: 4;
+      bottom: 32px;
+      left: 32px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-width: min(480px, calc(100vw - 64px));
+    }
+
+    .control {
+      appearance: none;
+      min-height: 39px;
+      padding: 0 13px;
+      border: 1px solid rgba(196, 236, 219, 0.17);
+      border-radius: 11px;
+      background: rgba(12, 25, 23, 0.65);
+      box-shadow: inset 0 1px 0 rgba(248, 255, 251, 0.08);
+      color: #d5e5de;
+      font: inherit;
+      font-size: 12px;
+      line-height: 1;
+      cursor: pointer;
+      white-space: nowrap;
+      backdrop-filter: blur(14px) saturate(120%);
+      -webkit-backdrop-filter: blur(14px) saturate(120%);
+      transition:
+        transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 220ms ease,
+        background 220ms ease,
+        color 220ms ease;
+    }
+
+    .control:hover,
+    .control[aria-pressed="true"] {
+      border-color: rgba(110, 226, 189, 0.55);
+      background: rgba(61, 122, 101, 0.24);
+      color: #f2fff9;
+    }
+
+    .control:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .control:active { transform: scale(0.98); }
+
+    .interaction-note {
+      position: absolute;
+      z-index: 2;
+      left: 50%;
+      bottom: 40px;
+      transform: translateX(-50%);
+      width: max-content;
+      max-width: calc(100vw - 700px);
+      color: rgba(190, 215, 204, 0.66);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      pointer-events: none;
+      text-align: center;
+      transition: opacity 600ms ease;
+    }
+
+    .interaction-note.hidden { opacity: 0; }
+
+    #part-tooltip {
+      position: absolute;
+      z-index: 6;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border: 1px solid rgba(128, 241, 205, 0.52);
+      border-radius: 9px;
+      background: rgba(9, 24, 21, 0.86);
+      box-shadow:
+        inset 0 1px 0 rgba(245, 255, 249, 0.1),
+        0 12px 26px rgba(0, 0, 0, 0.28);
+      color: #ecfff6;
+      font-size: 11px;
+      line-height: 1;
+      letter-spacing: 0.04em;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-50%, -135%) scale(0.96);
+      transform-origin: 50% 100%;
+      transition: opacity 140ms ease, transform 140ms ease;
+      white-space: nowrap;
+      backdrop-filter: blur(11px);
+      -webkit-backdrop-filter: blur(11px);
+    }
+
+    #part-tooltip.visible {
+      opacity: 1;
+      transform: translate(-50%, -135%) scale(1);
+    }
+
+    #part-tooltip::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -5px;
+      width: 8px;
+      height: 8px;
+      border-right: 1px solid rgba(128, 241, 205, 0.52);
+      border-bottom: 1px solid rgba(128, 241, 205, 0.52);
+      background: rgba(9, 24, 21, 0.86);
+      transform: translateX(-50%) rotate(45deg);
+    }
+
+    #part-tooltip b {
+      color: var(--accent);
+      font-weight: 650;
+    }
+
+    #toast {
+      position: absolute;
+      z-index: 8;
+      left: 50%;
+      top: 88px;
+      padding: 9px 12px;
+      border: 1px solid rgba(110, 226, 189, 0.28);
+      border-radius: 10px;
+      background: rgba(9, 25, 22, 0.84);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.2);
+      color: #d9f6e9;
+      font-size: 11px;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-50%, -12px);
+      transition: opacity 260ms ease, transform 260ms ease;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    #toast.visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    #loading {
+      position: absolute;
+      z-index: 10;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(38, 87, 75, 0.18), transparent 30%),
+        #07100f;
+      transition: opacity 650ms ease, visibility 650ms ease;
+    }
+
+    #loading.done {
+      visibility: hidden;
+      opacity: 0;
+    }
+
+    .loader-content {
+      display: grid;
+      justify-items: center;
+      gap: 16px;
+      color: #c9ddd4;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+    }
+
+    .loader-ring {
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(110, 226, 189, 0.24);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(1turn); } }
+
+    @media (max-width: 820px) {
+      .topbar { padding: 20px; }
+      .info-panel { top: 88px; right: 20px; width: min(286px, calc(100vw - 40px)); }
+      .controls { bottom: 20px; left: 20px; max-width: calc(100vw - 40px); }
+      .interaction-note { display: none; }
+    }
+
+    @media (max-width: 620px) {
+      .topbar { padding: 16px; }
+      .brand-sub { display: none; }
+      .live-status { font-size: 10px; }
+      .info-panel {
+        top: auto;
+        right: 14px;
+        left: 14px;
+        bottom: 82px;
+        width: auto;
+        max-width: none;
+      }
+      .panel-top { padding: 14px 15px 12px; }
+      .panel-body { padding: 11px 15px 13px; }
+      .panel-title { font-size: 17px; }
+      .panel-body p { font-size: 11px; line-height: 1.55; }
+      .part-tags, .panel-hint { display: none; }
+      .controls {
+        left: 14px;
+        right: 14px;
+        bottom: 14px;
+        justify-content: stretch;
+        max-width: none;
+      }
+      .control { flex: 1 1 calc(33% - 6px); min-width: 0; padding: 0 8px; font-size: 11px; }
+      #toast { top: 64px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main id="experience">
+    <canvas id="watch-canvas" aria-label="可交互的三维镂空机械腕表。拖拽旋转，悬停或点击零件查看信息。"></canvas>
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">AURORA HOROLOGY</div>
+        <div class="brand-sub">SKELETON CALIBRE 01</div>
+      </div>
+      <div class="live-status"><i></i><span id="motion-status">机械运转中</span></div>
+    </header>
+
+    <aside class="info-panel" id="info-panel" data-selected="false" aria-live="polite">
+      <div class="panel-top">
+        <div>
+          <p class="panel-kicker" id="panel-kicker">探索机芯</p>
+          <h1 class="panel-title" id="panel-title">镂空机械机芯</h1>
+        </div>
+        <div class="panel-state" id="panel-state">实时联动</div>
+      </div>
+      <div class="panel-body">
+        <p id="panel-copy">拖拽自由观察。悬停或点击任一高亮部件，查看它在计时系统中的作用。</p>
+        <div class="part-tags" id="part-tags">
+          <span>手工倒角</span><span>动态擒纵</span><span>蓝宝石镜面</span>
+        </div>
+        <div class="panel-hint">拖拽旋转视角，滚轮缩放。点击后将锁定当前零件。</div>
+      </div>
+    </aside>
+
+    <div class="controls" aria-label="展示控制">
+      <button class="control" id="explode-toggle" type="button" aria-pressed="false">爆炸视图</button>
+      <button class="control" id="rotate-toggle" type="button" aria-pressed="true">自动旋转</button>
+      <button class="control" id="reset-view" type="button">复位镜头</button>
+    </div>
+
+    <div class="interaction-note" id="interaction-note">拖拽旋转腕表，悬停探索精密机芯</div>
+    <div id="part-tooltip" role="status"><b>部件</b><span id="tooltip-text"></span></div>
+    <div id="toast" aria-live="polite"></div>
+
+    <div id="loading" aria-live="polite">
+      <div class="loader-content">
+        <div class="loader-ring"></div>
+        <span>精密机芯装配中</span>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js";
+    import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/controls/OrbitControls.js";
+    import { RoomEnvironment } from "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/environments/RoomEnvironment.js";
+    import { Reflector } from "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/objects/Reflector.js";
+    import { EffectComposer } from "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/postprocessing/EffectComposer.js";
+    import { RenderPass } from "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/postprocessing/RenderPass.js";
+    import { OutlinePass } from "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/postprocessing/OutlinePass.js";
+    import { UnrealBloomPass } from "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/postprocessing/UnrealBloomPass.js";
+
+    const canvas = document.querySelector("#watch-canvas");
+    const stage = document.querySelector("#experience");
+    const loading = document.querySelector("#loading");
+    const tooltip = document.querySelector("#part-tooltip");
+    const tooltipText = document.querySelector("#tooltip-text");
+    const panel = document.querySelector("#info-panel");
+    const panelKicker = document.querySelector("#panel-kicker");
+    const panelTitle = document.querySelector("#panel-title");
+    const panelState = document.querySelector("#panel-state");
+    const panelCopy = document.querySelector("#panel-copy");
+    const tagBox = document.querySelector("#part-tags");
+    const interactionNote = document.querySelector("#interaction-note");
+    const toast = document.querySelector("#toast");
+    const explodeButton = document.querySelector("#explode-toggle");
+    const rotateButton = document.querySelector("#rotate-toggle");
+    const resetButton = document.querySelector("#reset-view");
+    const motionStatus = document.querySelector("#motion-status");
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(stage.clientWidth, stage.clientHeight, false);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.08;
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x07100f, 0.043);
+
+    const camera = new THREE.PerspectiveCamera(34, stage.clientWidth / stage.clientHeight, 0.1, 100);
+    const defaultCamera = new THREE.Vector3(0, 9.6, 13.8);
+    const defaultTarget = new THREE.Vector3(0, 0.22, 0);
+    camera.position.copy(defaultCamera);
+
+    const controls = new OrbitControls(camera, canvas);
+    controls.target.copy(defaultTarget);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.055;
+    controls.enablePan = false;
+    controls.minDistance = 8.2;
+    controls.maxDistance = 18;
+    controls.minPolarAngle = 0.24;
+    controls.maxPolarAngle = 1.42;
+    controls.rotateSpeed = 0.62;
+    controls.zoomSpeed = 0.72;
+
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloomPass = new UnrealBloomPass(
+      new THREE.Vector2(stage.clientWidth, stage.clientHeight),
+      0.48,
+      0.62,
+      0.86
+    );
+    composer.addPass(bloomPass);
+    const outlinePass = new OutlinePass(new THREE.Vector2(stage.clientWidth, stage.clientHeight), scene, camera);
+    outlinePass.edgeStrength = 3.1;
+    outlinePass.edgeGlow = 0.48;
+    outlinePass.edgeThickness = 1.3;
+    outlinePass.pulsePeriod = 0;
+    outlinePass.visibleEdgeColor.set(0x77f2c9);
+    outlinePass.hiddenEdgeColor.set(0x1a6c57);
+    composer.addPass(outlinePass);
+
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    const room = new RoomEnvironment();
+    scene.environment = pmrem.fromScene(room, 0.05).texture;
+    room.dispose();
+    pmrem.dispose();
+
+    const hemi = new THREE.HemisphereLight(0xc8fff0, 0x07100f, 1.35);
+    scene.add(hemi);
+
+    const keyLight = new THREE.SpotLight(0xe7fff8, 120, 35, 0.52, 0.64, 2);
+    keyLight.position.set(-7, 12, 7);
+    keyLight.target.position.set(0, 0, 0);
+    keyLight.castShadow = true;
+    keyLight.shadow.mapSize.set(1024, 1024);
+    keyLight.shadow.bias = -0.00018;
+    scene.add(keyLight, keyLight.target);
+
+    const rimLight = new THREE.SpotLight(0x77e8cc, 74, 30, 0.72, 0.84, 2);
+    rimLight.position.set(8, 8, -7);
+    rimLight.target.position.set(0, 0.25, 0);
+    scene.add(rimLight, rimLight.target);
+
+    const warmLight = new THREE.PointLight(0xffbd75, 18, 16, 2);
+    warmLight.position.set(-2, 4, -6);
+    scene.add(warmLight);
+
+    const floorMirror = new Reflector(new THREE.CircleGeometry(10.8, 128), {
+      textureWidth: Math.min(2048, stage.clientWidth * Math.min(window.devicePixelRatio, 2)),
+      textureHeight: Math.min(2048, stage.clientHeight * Math.min(window.devicePixelRatio, 2)),
+      color: 0x0c1817,
+      clipBias: 0.004
+    });
+    floorMirror.rotation.x = -Math.PI / 2;
+    floorMirror.position.y = -0.88;
+    scene.add(floorMirror);
+
+    const shadowFloor = new THREE.Mesh(
+      new THREE.CircleGeometry(10.55, 128),
+      new THREE.ShadowMaterial({ color: 0x000000, opacity: 0.36 })
+    );
+    shadowFloor.rotation.x = -Math.PI / 2;
+    shadowFloor.position.y = -0.872;
+    shadowFloor.receiveShadow = true;
+    scene.add(shadowFloor);
+
+    const floorHalo = new THREE.Mesh(
+      new THREE.RingGeometry(8.95, 9.02, 128),
+      new THREE.MeshBasicMaterial({ color: 0x5a8e7f, transparent: true, opacity: 0.12, side: THREE.DoubleSide })
+    );
+    floorHalo.rotation.x = -Math.PI / 2;
+    floorHalo.position.y = -0.865;
+    scene.add(floorHalo);
+
+    const materials = {
+      caseSteel: new THREE.MeshPhysicalMaterial({
+        color: 0x899a9d,
+        metalness: 0.96,
+        roughness: 0.18,
+        clearcoat: 0.72,
+        clearcoatRoughness: 0.14
+      }),
+      brushedSteel: new THREE.MeshPhysicalMaterial({
+        color: 0x637377,
+        metalness: 0.92,
+        roughness: 0.36,
+        clearcoat: 0.25,
+        clearcoatRoughness: 0.3
+      }),
+      darkSteel: new THREE.MeshPhysicalMaterial({
+        color: 0x172627,
+        metalness: 0.9,
+        roughness: 0.28,
+        clearcoat: 0.48,
+        clearcoatRoughness: 0.18
+      }),
+      blackMetal: new THREE.MeshPhysicalMaterial({
+        color: 0x0a1112,
+        metalness: 0.88,
+        roughness: 0.23,
+        clearcoat: 0.44,
+        clearcoatRoughness: 0.13
+      }),
+      gold: new THREE.MeshPhysicalMaterial({
+        color: 0xb58a3d,
+        metalness: 0.92,
+        roughness: 0.2,
+        clearcoat: 0.68,
+        clearcoatRoughness: 0.16
+      }),
+      goldDark: new THREE.MeshPhysicalMaterial({
+        color: 0x624617,
+        metalness: 0.9,
+        roughness: 0.32,
+        clearcoat: 0.35
+      }),
+      blueSteel: new THREE.MeshPhysicalMaterial({
+        color: 0x31596d,
+        metalness: 0.92,
+        roughness: 0.2,
+        clearcoat: 0.7,
+        clearcoatRoughness: 0.13
+      }),
+      ruby: new THREE.MeshPhysicalMaterial({
+        color: 0xa3142d,
+        metalness: 0.25,
+        roughness: 0.08,
+        transmission: 0.16,
+        thickness: 0.35,
+        ior: 1.5,
+        clearcoat: 1,
+        clearcoatRoughness: 0.04,
+        emissive: 0x280006,
+        emissiveIntensity: 0.42
+      }),
+      lume: new THREE.MeshStandardMaterial({
+        color: 0xa6f7d5,
+        emissive: 0x4ac79d,
+        emissiveIntensity: 1.5,
+        roughness: 0.34,
+        metalness: 0.1
+      }),
+      strap: new THREE.MeshPhysicalMaterial({
+        color: 0x0b1717,
+        metalness: 0.15,
+        roughness: 0.54,
+        clearcoat: 0.26,
+        clearcoatRoughness: 0.35
+      }),
+      crystal: new THREE.MeshPhysicalMaterial({
+        color: 0xcffcff,
+        metalness: 0,
+        roughness: 0.04,
+        transmission: 0.86,
+        thickness: 0.27,
+        ior: 1.47,
+        transparent: true,
+        opacity: 0.31,
+        clearcoat: 1,
+        clearcoatRoughness: 0.025,
+        side: THREE.DoubleSide,
+        depthWrite: false
+      }),
+      crystalEdge: new THREE.MeshPhysicalMaterial({
+        color: 0x95d5d2,
+        metalness: 0.22,
+        roughness: 0.05,
+        transmission: 0.42,
+        transparent: true,
+        opacity: 0.48,
+        clearcoat: 1
+      })
+    };
+
+    const partData = {
+      barrel: {
+        kicker: "能量模块",
+        name: "主发条盒",
+        state: "持续释能",
+        copy: "盘绕的主发条储存上链能量，并通过桶轮将稳定扭矩传递给整组传动齿轮。",
+        tags: ["发条钢带", "镀金桶轮", "扭矩输出"]
+      },
+      train: {
+        kicker: "传动模块",
+        name: "齿轮系",
+        state: "比例传动",
+        copy: "多级齿轮以互相啮合的节奏分配能量。不同直径形成清晰的转速层级与方向关系。",
+        tags: ["轮系啮合", "抛光齿面", "轴心联动"]
+      },
+      balance: {
+        kicker: "调速模块",
+        name: "摆轮与游丝",
+        state: "高频摆动",
+        copy: "摆轮提供规律惯性，游丝以极细的呼吸式收放维持振幅，决定整枚机芯的走时节拍。",
+        tags: ["蓝钢游丝", "微调砝码", "惯性摆轮"]
+      },
+      escapement: {
+        kicker: "擒纵模块",
+        name: "瑞士杠杆擒纵",
+        state: "脉冲释放",
+        copy: "擒纵叉将轮系连续释放的能量切分为短促脉冲，并在每次摆动中为摆轮补充动力。",
+        tags: ["擒纵叉", "逃逸轮", "脉冲传递"]
+      },
+      bridge: {
+        kicker: "结构模块",
+        name: "镂空夹板",
+        state: "稳定支承",
+        copy: "经过倒角处理的夹板固定轴承位置，同时以开放轮廓保留机芯纵深和齿轮运动的可见性。",
+        tags: ["手工倒角", "拉丝钢面", "固定螺丝"]
+      },
+      jewels: {
+        kicker: "轴承模块",
+        name: "红宝石轴承",
+        state: "低摩擦支点",
+        copy: "人工红宝石为高速转轴提供耐磨支点，降低摩擦并让润滑油膜保持稳定。",
+        tags: ["合成红宝石", "金属镶口", "耐磨支承"]
+      },
+      hands: {
+        kicker: "显示模块",
+        name: "夜光指针",
+        state: "实时走时",
+        copy: "分层抛光指针覆盖夜光涂层，透过全景镂空结构仍能在暗处保持清晰辨读。",
+        tags: ["夜光涂层", "分层指针", "秒针扫动"]
+      },
+      crystal: {
+        kicker: "保护模块",
+        name: "蓝宝石水晶",
+        state: "双面防眩",
+        copy: "弧面蓝宝石镜面为机芯提供硬质保护，边缘高光与细微反射强调它的通透厚度。",
+        tags: ["高硬度镜面", "通透镀膜", "弧面折射"]
+      }
+    };
+
+    const watch = new THREE.Group();
+    watch.rotation.y = -0.18;
+    watch.position.y = -0.08;
+    scene.add(watch);
+
+    const selectables = [];
+    const explodables = [];
+    const movingGears = [];
+    const reusable = {
+      screwHead: new THREE.CylinderGeometry(0.105, 0.12, 0.07, 16),
+      screwSlot: new THREE.BoxGeometry(0.12, 0.009, 0.018),
+      jewelSeat: new THREE.TorusGeometry(0.115, 0.026, 8, 24),
+      jewel: new THREE.SphereGeometry(0.097, 20, 12)
+    };
+
+    function setShadow(object) {
+      object.traverse(function(child) {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+      return object;
+    }
+
+    function horizontalTorus(radius, tube, material, segments) {
+      const mesh = new THREE.Mesh(
+        new THREE.TorusGeometry(radius, tube, 12, segments || 72),
+        material
+      );
+      mesh.rotation.x = Math.PI / 2;
+      return mesh;
+    }
+
+    function ringGeometry(outerRadius, innerRadius, material, height) {
+      const shape = new THREE.Shape();
+      shape.absarc(0, 0, outerRadius, 0, Math.PI * 2, false);
+      const hole = new THREE.Path();
+      hole.absarc(0, 0, innerRadius, 0, Math.PI * 2, true);
+      shape.holes.push(hole);
+      const geometry = new THREE.ExtrudeGeometry(shape, {
+        depth: height,
+        bevelEnabled: true,
+        bevelSegments: 2,
+        bevelSize: 0.022,
+        bevelThickness: 0.02,
+        curveSegments: 96
+      });
+      geometry.rotateX(-Math.PI / 2);
+      return new THREE.Mesh(geometry, material);
+    }
+
+    function addScrew(parent, x, z, y, material) {
+      const screw = new THREE.Group();
+      const head = new THREE.Mesh(reusable.screwHead, material || materials.blueSteel);
+      head.position.y = 0;
+      const slot = new THREE.Mesh(reusable.screwSlot, materials.blackMetal);
+      slot.position.y = 0.039;
+      slot.rotation.y = (x * 2.51 + z * 1.37) % Math.PI;
+      screw.add(head, slot);
+      screw.position.set(x, y, z);
+      parent.add(screw);
+      return screw;
+    }
+
+    function addJewel(parent, x, z, y, scale) {
+      const size = scale || 1;
+      const seat = horizontalTorus(0.115 * size, 0.026 * size, materials.goldDark, 28);
+      const stone = new THREE.Mesh(reusable.jewel, materials.ruby);
+      stone.scale.setScalar(size);
+      stone.scale.y = 0.42;
+      seat.position.set(x, y, z);
+      stone.position.set(x, y + 0.016, z);
+      parent.add(seat, stone);
+    }
+
+    function makePart(id) {
+      const group = new THREE.Group();
+      group.userData.part = partData[id];
+      selectables.push(group);
+      return group;
+    }
+
+    function registerExplodable(group, displacement) {
+      group.userData.basePosition = group.position.clone();
+      group.userData.explodedPosition = group.position.clone().add(displacement);
+      explodables.push(group);
+    }
+
+    function makeGear(radius, teeth, material, spokeCount, thickness) {
+      const group = new THREE.Group();
+      const bodyHeight = thickness || 0.15;
+      const rim = horizontalTorus(radius * 0.72, radius * 0.115, material, 72);
+      rim.position.y = 0.004;
+      group.add(rim);
+
+      const spokeGeometry = new THREE.BoxGeometry(radius * 0.12, bodyHeight * 1.25, radius * 1.3);
+      const toothGeometry = new THREE.BoxGeometry(
+        Math.max(0.065, radius * 0.14),
+        bodyHeight * 1.12,
+        Math.max(0.095, radius * 0.16)
+      );
+      const spokeMaterial = material === materials.gold ? materials.goldDark : materials.darkSteel;
+      for (let index = 0; index < spokeCount; index += 1) {
+        const angle = (index / spokeCount) * Math.PI * 2;
+        const spoke = new THREE.Mesh(spokeGeometry, spokeMaterial);
+        spoke.rotation.y = angle;
+        spoke.position.y = 0;
+        group.add(spoke);
+      }
+      for (let index = 0; index < teeth; index += 1) {
+        const angle = (index / teeth) * Math.PI * 2;
+        const tooth = new THREE.Mesh(toothGeometry, material);
+        tooth.position.set(Math.sin(angle) * radius * 0.96, 0, Math.cos(angle) * radius * 0.96);
+        tooth.rotation.y = angle;
+        group.add(tooth);
+      }
+
+      const hub = new THREE.Mesh(
+        new THREE.CylinderGeometry(radius * 0.18, radius * 0.18, bodyHeight * 1.45, 32),
+        materials.blueSteel
+      );
+      const hubCap = new THREE.Mesh(
+        new THREE.CylinderGeometry(radius * 0.065, radius * 0.065, bodyHeight * 1.65, 20),
+        materials.ruby
+      );
+      hubCap.position.y = 0.014;
+      group.add(hub, hubCap);
+      return setShadow(group);
+    }
+
+    function makeSpiral(radius, turns, tube, material, inward) {
+      const points = [];
+      const count = 220;
+      for (let index = 0; index < count; index += 1) {
+        const progress = index / (count - 1);
+        const angle = progress * Math.PI * 2 * turns;
+        const adjusted = inward ? radius * (1 - progress * 0.84) : radius * (0.13 + progress * 0.87);
+        points.push(new THREE.Vector3(Math.sin(angle) * adjusted, 0, Math.cos(angle) * adjusted));
+      }
+      const curve = new THREE.CatmullRomCurve3(points);
+      return new THREE.Mesh(new THREE.TubeGeometry(curve, 260, tube, 7, false), material);
+    }
+
+    function makeBridgePlate(points, width, material) {
+      const left = [];
+      const right = [];
+      for (let index = 0; index < points.length; index += 1) {
+        const prev = points[Math.max(0, index - 1)];
+        const next = points[Math.min(points.length - 1, index + 1)];
+        const tangent = new THREE.Vector2(next.x - prev.x, next.z - prev.z).normalize();
+        const normal = new THREE.Vector2(-tangent.y, tangent.x).multiplyScalar(width * 0.5);
+        left.push(new THREE.Vector2(points[index].x + normal.x, -points[index].z - normal.y));
+        right.push(new THREE.Vector2(points[index].x - normal.x, -points[index].z + normal.y));
+      }
+      const shape = new THREE.Shape();
+      shape.moveTo(left[0].x, left[0].y);
+      for (let index = 1; index < left.length; index += 1) shape.lineTo(left[index].x, left[index].y);
+      for (let index = right.length - 1; index >= 0; index -= 1) shape.lineTo(right[index].x, right[index].y);
+      shape.closePath();
+      const geometry = new THREE.ExtrudeGeometry(shape, {
+        depth: 0.145,
+        bevelEnabled: true,
+        bevelSegments: 3,
+        bevelSize: 0.035,
+        bevelThickness: 0.026,
+        curveSegments: 18
+      });
+      geometry.rotateX(-Math.PI / 2);
+      const mesh = new THREE.Mesh(geometry, material);
+      return mesh;
+    }
+
+    function makeHand(length, width, material, lumeLength) {
+      const group = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.BoxGeometry(width, 0.072, length), material);
+      body.position.z = length * 0.5 - width * 0.06;
+      const inlay = new THREE.Mesh(
+        new THREE.BoxGeometry(width * 0.45, 0.081, lumeLength || length * 0.58),
+        materials.lume
+      );
+      inlay.position.set(0, 0.015, (lumeLength || length * 0.58) * 0.5 + width * 0.12);
+      const counter = new THREE.Mesh(new THREE.BoxGeometry(width * 0.72, 0.07, length * 0.23), material);
+      counter.position.z = -length * 0.11;
+      group.add(body, inlay, counter);
+      return group;
+    }
+
+    function makeLabelSprite(text) {
+      const textureCanvas = document.createElement("canvas");
+      textureCanvas.width = 256;
+      textureCanvas.height = 64;
+      const context = textureCanvas.getContext("2d");
+      context.clearRect(0, 0, 256, 64);
+      context.font = "600 24px Arial";
+      context.letterSpacing = "5px";
+      context.fillStyle = "rgba(197, 224, 214, 0.72)";
+      context.textAlign = "center";
+      context.textBaseline = "middle";
+      context.fillText(text, 128, 33);
+      const texture = new THREE.CanvasTexture(textureCanvas);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: texture,
+        transparent: true,
+        depthWrite: false,
+        opacity: 0.76
+      }));
+      sprite.scale.set(1.35, 0.337, 1);
+      return sprite;
+    }
+
+    const strapGroup = new THREE.Group();
+    watch.add(strapGroup);
+    const strapGeometry = new THREE.BoxGeometry(2.58, 0.24, 4.7);
+    const upperStrap = new THREE.Mesh(strapGeometry, materials.strap);
+    upperStrap.position.set(0, -0.22, 6.58);
+    const lowerStrap = new THREE.Mesh(strapGeometry, materials.strap);
+    lowerStrap.position.set(0, -0.22, -6.58);
+    strapGroup.add(upperStrap, lowerStrap);
+    for (let index = 0; index < 7; index += 1) {
+      const offset = index * 0.52 + 4.98;
+      const stitchA = new THREE.Mesh(new THREE.BoxGeometry(1.96, 0.012, 0.026), materials.brushedSteel);
+      const stitchB = stitchA.clone();
+      stitchA.position.set(0, -0.094, offset);
+      stitchB.position.set(0, -0.094, -offset);
+      strapGroup.add(stitchA, stitchB);
+    }
+
+    const caseGroup = new THREE.Group();
+    watch.add(caseGroup);
+    const caseBody = new THREE.Mesh(
+      new THREE.CylinderGeometry(5.34, 5.47, 0.72, 144),
+      materials.caseSteel
+    );
+    caseBody.position.y = -0.22;
+    caseGroup.add(caseBody);
+
+    const caseSide = ringGeometry(5.43, 5.02, materials.brushedSteel, 0.44);
+    caseSide.position.y = -0.43;
+    caseGroup.add(caseSide);
+
+    const backPlate = new THREE.Mesh(
+      new THREE.CylinderGeometry(4.94, 4.94, 0.09, 128),
+      materials.blackMetal
+    );
+    backPlate.position.y = 0.145;
+    caseGroup.add(backPlate);
+
+    const bezelGroup = new THREE.Group();
+    const bezel = horizontalTorus(5.0, 0.22, materials.caseSteel, 128);
+    bezel.position.y = 0.72;
+    const bezelInner = horizontalTorus(4.78, 0.038, materials.goldDark, 128);
+    bezelInner.position.y = 0.732;
+    bezelGroup.add(bezel, bezelInner);
+    watch.add(bezelGroup);
+    bezelGroup.userData.part = partData.crystal;
+    selectables.push(bezelGroup);
+    registerExplodable(bezelGroup, new THREE.Vector3(0, 0.82, 0));
+
+    const lugs = new THREE.Group();
+    const lugGeometry = new THREE.BoxGeometry(1.14, 0.34, 0.64);
+    const lugPositions = [
+      [-1.68, 5.1], [1.68, 5.1], [-1.68, -5.1], [1.68, -5.1]
+    ];
+    lugPositions.forEach(function(position) {
+      const lug = new THREE.Mesh(lugGeometry, materials.caseSteel);
+      lug.position.set(position[0], -0.18, position[1]);
+      lugs.add(lug);
+    });
+    watch.add(lugs);
+
+    const crown = new THREE.Group();
+    const crownBody = new THREE.Mesh(new THREE.CylinderGeometry(0.37, 0.37, 0.34, 32), materials.caseSteel);
+    crownBody.rotation.z = Math.PI / 2;
+    crownBody.position.x = 5.55;
+    const crownCap = new THREE.Mesh(new THREE.CylinderGeometry(0.29, 0.29, 0.06, 32), materials.blueSteel);
+    crownCap.rotation.z = Math.PI / 2;
+    crownCap.position.x = 5.76;
+    crown.add(crownBody, crownCap);
+    for (let index = 0; index < 16; index += 1) {
+      const groove = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.037, 0.07), materials.darkSteel);
+      groove.position.set(5.75, Math.sin(index / 16 * Math.PI * 2) * 0.3, Math.cos(index / 16 * Math.PI * 2) * 0.3);
+      crown.add(groove);
+    }
+    watch.add(crown);
+
+    const movementPlate = new THREE.Group();
+    const plateRing = ringGeometry(4.72, 4.36, materials.darkSteel, 0.17);
+    plateRing.position.y = 0.18;
+    const innerPlate = new THREE.Mesh(new THREE.CylinderGeometry(4.31, 4.31, 0.052, 128), materials.blackMetal);
+    innerPlate.position.y = 0.255;
+    movementPlate.add(plateRing, innerPlate);
+    watch.add(movementPlate);
+
+    const tickGroup = new THREE.Group();
+    watch.add(tickGroup);
+    for (let index = 0; index < 60; index += 1) {
+      const angle = index / 60 * Math.PI * 2;
+      const major = index % 5 === 0;
+      const length = major ? 0.43 : 0.19;
+      const width = major ? 0.065 : 0.025;
+      const marker = new THREE.Mesh(
+        new THREE.BoxGeometry(width, 0.048, length),
+        major ? materials.lume : materials.brushedSteel
+      );
+      marker.position.set(Math.sin(angle) * 4.27, 0.52, Math.cos(angle) * 4.27);
+      marker.rotation.y = angle;
+      tickGroup.add(marker);
+      if (major) {
+        const innerMarker = new THREE.Mesh(new THREE.BoxGeometry(width * 0.38, 0.054, length * 0.62), materials.caseSteel);
+        innerMarker.position.set(Math.sin(angle) * 4.16, 0.545, Math.cos(angle) * 4.16);
+        innerMarker.rotation.y = angle;
+        tickGroup.add(innerMarker);
+      }
+    }
+
+    const dialLabel = makeLabelSprite("AURORA");
+    dialLabel.position.set(0, 0.57, 2.93);
+    dialLabel.material.rotation = 0;
+    watch.add(dialLabel);
+    const dialCalibre = makeLabelSprite("CALIBRE 01");
+    dialCalibre.position.set(0, 0.57, -2.76);
+    dialCalibre.scale.set(1.04, 0.26, 1);
+    watch.add(dialCalibre);
+
+    const barrelPart = makePart("barrel");
+    barrelPart.position.set(-1.86, 0.41, 0.82);
+    const barrelOuter = horizontalTorus(1.46, 0.12, materials.gold, 96);
+    barrelOuter.position.y = 0.03;
+    const barrelInner = horizontalTorus(1.24, 0.046, materials.goldDark, 72);
+    barrelInner.position.y = 0.075;
+    const barrelBase = new THREE.Mesh(new THREE.CylinderGeometry(1.28, 1.28, 0.09, 80), materials.blackMetal);
+    barrelBase.position.y = -0.02;
+    const barrelSpring = makeSpiral(1.08, 5.2, 0.024, materials.gold, true);
+    barrelSpring.position.y = 0.095;
+    const barrelHub = new THREE.Mesh(new THREE.CylinderGeometry(0.19, 0.19, 0.16, 32), materials.blueSteel);
+    barrelHub.position.y = 0.11;
+    barrelPart.add(barrelBase, barrelOuter, barrelInner, barrelSpring, barrelHub);
+    for (let index = 0; index < 32; index += 1) {
+      const angle = index / 32 * Math.PI * 2;
+      const tooth = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.13, 0.16), materials.gold);
+      tooth.position.set(Math.sin(angle) * 1.47, 0.02, Math.cos(angle) * 1.47);
+      tooth.rotation.y = angle;
+      barrelPart.add(tooth);
+    }
+    addJewel(barrelPart, 0, 0, 0.19, 1.3);
+    watch.add(barrelPart);
+    registerExplodable(barrelPart, new THREE.Vector3(-0.9, 0.6, 0.48));
+
+    const trainPart = makePart("train");
+    trainPart.position.y = 0.4;
+    const trainCoordinates = [
+      { x: 1.36, z: 1.55, radius: 1.02, teeth: 33, spokes: 6, material: materials.gold, speed: -0.48 },
+      { x: 2.58, z: 0.14, radius: 0.64, teeth: 22, spokes: 5, material: materials.brushedSteel, speed: 0.8 },
+      { x: 1.45, z: -1.19, radius: 0.84, teeth: 29, spokes: 6, material: materials.gold, speed: -0.61 },
+      { x: 0.21, z: -1.83, radius: 0.5, teeth: 18, spokes: 4, material: materials.blueSteel, speed: 1.12 },
+      { x: -0.72, z: -1.42, radius: 0.55, teeth: 19, spokes: 5, material: materials.brushedSteel, speed: -0.94 }
+    ];
+    trainCoordinates.forEach(function(item, index) {
+      const gear = makeGear(item.radius, item.teeth, item.material, item.spokes, 0.13);
+      gear.position.set(item.x, 0.03 + (index % 2) * 0.04, item.z);
+      trainPart.add(gear);
+      movingGears.push({ object: gear, speed: item.speed, phase: index * 0.6 });
+      addJewel(trainPart, item.x, item.z, 0.17 + (index % 2) * 0.04, item.radius < 0.65 ? 0.72 : 0.96);
+    });
+    watch.add(trainPart);
+    registerExplodable(trainPart, new THREE.Vector3(0.48, 0.62, -0.54));
+
+    const escapementPart = makePart("escapement");
+    escapementPart.position.set(2.35, 0.56, -1.82);
+    const escapeWheel = makeGear(0.51, 19, materials.gold, 5, 0.1);
+    escapeWheel.position.x = 0.5;
+    escapeWheel.position.z = 0.16;
+    const escapeWheelHub = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.16, 20), materials.ruby);
+    escapeWheelHub.position.set(0.5, 0.085, 0.16);
+    const anchor = new THREE.Group();
+    const anchorStem = new THREE.Mesh(new THREE.BoxGeometry(0.085, 0.11, 0.96), materials.blueSteel);
+    anchorStem.position.z = -0.16;
+    const anchorFork = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.11, 0.1), materials.blueSteel);
+    anchorFork.position.z = -0.58;
+    const forkLeft = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.11, 0.32), materials.blueSteel);
+    const forkRight = forkLeft.clone();
+    forkLeft.position.set(-0.38, 0, -0.43);
+    forkRight.position.set(0.38, 0, -0.43);
+    forkLeft.rotation.y = -0.62;
+    forkRight.rotation.y = 0.62;
+    const palletA = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.13, 0.16), materials.ruby);
+    const palletB = palletA.clone();
+    palletA.position.set(-0.39, 0.02, -0.42);
+    palletB.position.set(0.39, 0.02, -0.42);
+    anchor.add(anchorStem, anchorFork, forkLeft, forkRight, palletA, palletB);
+    anchor.position.set(-0.18, 0.1, -0.04);
+    const anchorPivot = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.13, 24), materials.ruby);
+    anchorPivot.position.set(-0.18, 0.11, -0.04);
+    escapementPart.add(escapeWheel, escapeWheelHub, anchor, anchorPivot);
+    watch.add(escapementPart);
+    registerExplodable(escapementPart, new THREE.Vector3(0.98, 1.05, -0.35));
+    movingGears.push({ object: escapeWheel, speed: 3.3, phase: 0 });
+
+    const balancePart = makePart("balance");
+    balancePart.position.set(-1.92, 0.44, -2.12);
+    const balanceRotor = new THREE.Group();
+    const balanceRing = horizontalTorus(1.28, 0.08, materials.blueSteel, 92);
+    balanceRing.position.y = 0.07;
+    balanceRotor.add(balanceRing);
+    for (let index = 0; index < 8; index += 1) {
+      const angle = index / 8 * Math.PI * 2;
+      const spoke = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.11, 1.92), materials.caseSteel);
+      spoke.rotation.y = angle;
+      balanceRotor.add(spoke);
+      const weight = new THREE.Mesh(new THREE.CylinderGeometry(0.105, 0.105, 0.12, 16), materials.gold);
+      weight.position.set(Math.sin(angle) * 1.28, 0.07, Math.cos(angle) * 1.28);
+      balanceRotor.add(weight);
+    }
+    const balanceHub = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.18, 32), materials.blueSteel);
+    balanceHub.position.y = 0.08;
+    const balanceJewel = new THREE.Mesh(new THREE.SphereGeometry(0.12, 20, 12), materials.ruby);
+    balanceJewel.scale.y = 0.44;
+    balanceJewel.position.y = 0.18;
+    balanceRotor.add(balanceHub, balanceJewel);
+    const hairspring = makeSpiral(0.96, 5.4, 0.018, materials.gold, true);
+    hairspring.position.y = 0.19;
+    balancePart.add(balanceRotor, hairspring);
+    watch.add(balancePart);
+    registerExplodable(balancePart, new THREE.Vector3(-0.72, 1.24, -0.42));
+
+    const jewelPart = makePart("jewels");
+    jewelPart.position.y = 0.48;
+    [
+      [-3.18, 1.9, 0.9], [-3.55, -1.24, 0.78], [-0.1, 2.82, 0.75],
+      [3.22, 2.42, 0.86], [3.86, -0.64, 0.76], [0.25, -3.25, 0.68]
+    ].forEach(function(item) {
+      addJewel(jewelPart, item[0], item[1], 0.04, item[2]);
+    });
+    watch.add(jewelPart);
+    registerExplodable(jewelPart, new THREE.Vector3(0, 0.44, 0));
+
+    const bridgePart = makePart("bridge");
+    bridgePart.position.y = 0.52;
+    const upperBridge = makeBridgePlate([
+      { x: -3.42, z: 1.83 },
+      { x: -2.8, z: 2.83 },
+      { x: -1.25, z: 3.15 },
+      { x: 0.5, z: 2.88 },
+      { x: 2.28, z: 2.34 }
+    ], 0.31, materials.brushedSteel);
+    const lowerBridge = makeBridgePlate([
+      { x: -3.35, z: -2.52 },
+      { x: -2.52, z: -3.2 },
+      { x: -0.86, z: -3.48 },
+      { x: 0.88, z: -3.2 },
+      { x: 2.45, z: -2.65 }
+    ], 0.25, materials.brushedSteel);
+    const balanceBridge = makeBridgePlate([
+      { x: -3.4, z: -1.22 },
+      { x: -3.2, z: -2.75 },
+      { x: -2.3, z: -3.65 },
+      { x: -1.18, z: -3.17 }
+    ], 0.24, materials.caseSteel);
+    bridgePart.add(upperBridge, lowerBridge, balanceBridge);
+    [
+      [-3.36, 1.84], [2.24, 2.35], [-3.3, -2.53], [2.42, -2.66], [-3.36, -1.2], [-1.15, -3.17]
+    ].forEach(function(item, index) {
+      addScrew(bridgePart, item[0], item[1], 0.12, index % 2 ? materials.blueSteel : materials.caseSteel);
+    });
+    watch.add(bridgePart);
+    registerExplodable(bridgePart, new THREE.Vector3(0.15, 1.58, 0.18));
+
+    const handsPart = makePart("hands");
+    handsPart.position.y = 0.72;
+    const hourHand = makeHand(2.08, 0.2, materials.caseSteel, 1.18);
+    const minuteHand = makeHand(3.16, 0.13, materials.blueSteel, 1.85);
+    const secondHand = new THREE.Group();
+    const secondStem = new THREE.Mesh(new THREE.BoxGeometry(0.032, 0.055, 3.65), materials.gold);
+    secondStem.position.z = 1.48;
+    const secondTip = new THREE.Mesh(new THREE.BoxGeometry(0.088, 0.06, 0.26), materials.lume);
+    secondTip.position.z = 3.18;
+    const secondCounter = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.07, 24), materials.gold);
+    secondHand.add(secondStem, secondTip, secondCounter);
+    const centralHub = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.16, 32), materials.caseSteel);
+    centralHub.position.y = 0.05;
+    const centralRuby = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 12), materials.ruby);
+    centralRuby.position.y = 0.14;
+    centralRuby.scale.y = 0.45;
+    handsPart.add(hourHand, minuteHand, secondHand, centralHub, centralRuby);
+    watch.add(handsPart);
+    registerExplodable(handsPart, new THREE.Vector3(0, 1.48, 0));
+
+    const crystalPart = makePart("crystal");
+    crystalPart.position.y = 0.85;
+    const crystal = new THREE.Mesh(new THREE.CylinderGeometry(4.88, 4.88, 0.07, 128), materials.crystal);
+    const crystalRim = horizontalTorus(4.89, 0.03, materials.crystalEdge, 128);
+    crystalRim.position.y = 0.047;
+    const crystalHighlight = new THREE.Mesh(
+      new THREE.TorusGeometry(4.48, 0.012, 6, 96, Math.PI * 0.6),
+      new THREE.MeshBasicMaterial({ color: 0xc9fff4, transparent: true, opacity: 0.34 })
+    );
+    crystalHighlight.rotation.x = Math.PI / 2;
+    crystalHighlight.rotation.z = 0.82;
+    crystalHighlight.position.set(0, 0.058, 0);
+    crystalPart.add(crystal, crystalRim, crystalHighlight);
+    watch.add(crystalPart);
+    registerExplodable(crystalPart, new THREE.Vector3(0, 2.45, 0));
+
+    const apertureRing = horizontalTorus(4.44, 0.025, materials.goldDark, 128);
+    apertureRing.position.y = 0.49;
+    watch.add(apertureRing);
+
+    const dustGeometry = new THREE.BufferGeometry();
+    const dustPoints = [];
+    const dustColor = [];
+    const random = function(seed) {
+      const value = Math.sin(seed * 12.9898) * 43758.5453;
+      return value - Math.floor(value);
+    };
+    for (let index = 0; index < 320; index += 1) {
+      const radius = 7 + random(index + 3) * 12;
+      const angle = random(index + 7) * Math.PI * 2;
+      dustPoints.push(Math.cos(angle) * radius, -1.3 + random(index + 11) * 6.5, Math.sin(angle) * radius);
+      const shade = 0.3 + random(index + 13) * 0.45;
+      dustColor.push(shade * 0.5, shade, shade * 0.78);
+    }
+    dustGeometry.setAttribute("position", new THREE.Float32BufferAttribute(dustPoints, 3));
+    dustGeometry.setAttribute("color", new THREE.Float32BufferAttribute(dustColor, 3));
+    const dust = new THREE.Points(dustGeometry, new THREE.PointsMaterial({
+      size: 0.025,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.55,
+      sizeAttenuation: true,
+      depthWrite: false
+    }));
+    scene.add(dust);
+
+    setShadow(watch);
+
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2(2, 2);
+    let hoveredPart = null;
+    let selectedPart = null;
+    let exploded = false;
+    let autoRotate = !reducedMotion;
+    let resetCamera = false;
+    let staticHandsSet = false;
+    let pointerDown = null;
+    let showInstruction = true;
+    let toastTimer = null;
+    const clock = new THREE.Clock();
+    const projectedPosition = new THREE.Vector3();
+    const bounds = new THREE.Box3();
+    const boundsCenter = new THREE.Vector3();
+
+    if (reducedMotion) {
+      rotateButton.setAttribute("aria-pressed", "false");
+      rotateButton.textContent = "自动旋转";
+      motionStatus.textContent = "静态观察模式";
+    }
+
+    function getPartFromObject(object) {
+      let current = object;
+      while (current) {
+        if (current.userData && current.userData.part) return current;
+        current = current.parent;
+      }
+      return null;
+    }
+
+    function meshesForPart(group) {
+      const meshes = [];
+      if (!group) return meshes;
+      group.traverse(function(child) {
+        if (child.isMesh && child.visible) meshes.push(child);
+      });
+      return meshes;
+    }
+
+    function syncOutline() {
+      const selectedMeshes = meshesForPart(selectedPart);
+      const hoverMeshes = hoveredPart && hoveredPart !== selectedPart ? meshesForPart(hoveredPart) : [];
+      outlinePass.selectedObjects = selectedMeshes.concat(hoverMeshes);
+    }
+
+    function renderPanel(data, locked) {
+      panel.dataset.selected = locked ? "true" : "false";
+      panelKicker.textContent = data.kicker;
+      panelTitle.textContent = data.name;
+      panelState.textContent = data.state;
+      panelCopy.textContent = data.copy;
+      tagBox.innerHTML = "";
+      data.tags.forEach(function(tag) {
+        const tagElement = document.createElement("span");
+        tagElement.textContent = tag;
+        tagBox.appendChild(tagElement);
+      });
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("visible");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function() {
+        toast.classList.remove("visible");
+      }, 1500);
+    }
+
+    function setHovered(nextPart) {
+      if (hoveredPart === nextPart) return;
+      hoveredPart = nextPart;
+      canvas.style.cursor = hoveredPart ? "pointer" : "grab";
+      if (hoveredPart) {
+        tooltipText.textContent = hoveredPart.userData.part.name;
+        tooltip.classList.add("visible");
+        if (!selectedPart) renderPanel(hoveredPart.userData.part, false);
+      } else {
+        tooltip.classList.remove("visible");
+        if (!selectedPart) {
+          renderPanel({
+            kicker: "探索机芯",
+            name: "镂空机械机芯",
+            state: "实时联动",
+            copy: "拖拽自由观察。悬停或点击任一高亮部件，查看它在计时系统中的作用。",
+            tags: ["手工倒角", "动态擒纵", "蓝宝石镜面"]
+          }, false);
+        }
+      }
+      syncOutline();
+    }
+
+    function setSelected(nextPart) {
+      selectedPart = nextPart;
+      if (selectedPart) {
+        renderPanel(selectedPart.userData.part, true);
+        showToast("已锁定：" + selectedPart.userData.part.name);
+      }
+      syncOutline();
+    }
+
+    function updateRaycast(event) {
+      const rect = canvas.getBoundingClientRect();
+      pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(pointer, camera);
+      const hits = raycaster.intersectObjects(selectables, true);
+      setHovered(hits.length ? getPartFromObject(hits[0].object) : null);
+    }
+
+    function updateTooltipPosition() {
+      if (!hoveredPart) return;
+      bounds.setFromObject(hoveredPart);
+      bounds.getCenter(boundsCenter);
+      projectedPosition.copy(boundsCenter).project(camera);
+      const onScreen = projectedPosition.z > -1 && projectedPosition.z < 1
+        && Math.abs(projectedPosition.x) < 1.15
+        && Math.abs(projectedPosition.y) < 1.15;
+      if (!onScreen) {
+        tooltip.classList.remove("visible");
+        return;
+      }
+      const x = (projectedPosition.x * 0.5 + 0.5) * stage.clientWidth;
+      const y = (-projectedPosition.y * 0.5 + 0.5) * stage.clientHeight;
+      tooltip.style.left = x + "px";
+      tooltip.style.top = y + "px";
+      tooltip.classList.add("visible");
+    }
+
+    canvas.addEventListener("pointermove", function(event) {
+      updateRaycast(event);
+      if (showInstruction) {
+        showInstruction = false;
+        interactionNote.classList.add("hidden");
+      }
+    });
+
+    canvas.addEventListener("pointerleave", function() {
+      setHovered(null);
+    });
+
+    canvas.addEventListener("pointerdown", function(event) {
+      pointerDown = { x: event.clientX, y: event.clientY };
+    });
+
+    canvas.addEventListener("pointerup", function(event) {
+      if (!pointerDown) return;
+      const travel = Math.hypot(event.clientX - pointerDown.x, event.clientY - pointerDown.y);
+      if (travel < 7) {
+        updateRaycast(event);
+        if (hoveredPart) setSelected(hoveredPart);
+      }
+      pointerDown = null;
+    });
+
+    explodeButton.addEventListener("click", function() {
+      exploded = !exploded;
+      explodeButton.setAttribute("aria-pressed", String(exploded));
+      explodeButton.textContent = exploded ? "收拢机芯" : "爆炸视图";
+      showToast(exploded ? "已展开机芯装配层级" : "已收拢至运行状态");
+    });
+
+    rotateButton.addEventListener("click", function() {
+      autoRotate = !autoRotate;
+      rotateButton.setAttribute("aria-pressed", String(autoRotate));
+      rotateButton.textContent = autoRotate ? "自动旋转" : "暂停旋转";
+      motionStatus.textContent = autoRotate ? "机械运转中" : "观察已暂停";
+    });
+
+    resetButton.addEventListener("click", function() {
+      resetCamera = true;
+      showToast("镜头已回到展示视角");
+    });
+
+    function resize() {
+      const width = stage.clientWidth;
+      const height = stage.clientHeight;
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(width, height, false);
+      composer.setSize(width, height);
+      bloomPass.setSize(width, height);
+      outlinePass.setSize(width, height);
+    }
+
+    window.addEventListener("resize", resize);
+
+    function setHandsFromCurrentTime() {
+      const date = new Date();
+      const milliseconds = date.getMilliseconds();
+      const second = date.getSeconds() + milliseconds / 1000;
+      const minute = date.getMinutes() + second / 60;
+      const hour = (date.getHours() % 12) + minute / 60;
+      secondHand.rotation.y = -second / 60 * Math.PI * 2;
+      minuteHand.rotation.y = -minute / 60 * Math.PI * 2;
+      hourHand.rotation.y = -hour / 12 * Math.PI * 2;
+    }
+
+    function animateMechanics(time, delta) {
+      if (reducedMotion) {
+        if (!staticHandsSet) {
+          setHandsFromCurrentTime();
+          staticHandsSet = true;
+        }
+        return;
+      }
+      const seconds = time * 0.001;
+      movingGears.forEach(function(entry) {
+        entry.object.rotation.y = entry.phase + seconds * entry.speed;
+      });
+      barrelSpring.rotation.y = seconds * -0.09;
+      balanceRotor.rotation.y = Math.sin(seconds * 18) * 0.23;
+      hairspring.scale.setScalar(1 + Math.sin(seconds * 18 + 0.8) * 0.032);
+      anchor.rotation.y = Math.sin(seconds * 18) * 0.25;
+      escapeWheel.rotation.y = seconds * 3.3;
+      setHandsFromCurrentTime();
+      crystalHighlight.material.opacity = 0.23 + Math.sin(seconds * 0.72) * 0.08;
+      dust.rotation.y = seconds * 0.006;
+      watch.position.y = -0.08 + Math.sin(seconds * 0.8) * 0.035;
+      if (autoRotate && !pointerDown) watch.rotation.y += delta * 0.000075;
+    }
+
+    function animateExplosion() {
+      explodables.forEach(function(group) {
+        const target = exploded ? group.userData.explodedPosition : group.userData.basePosition;
+        group.position.lerp(target, reducedMotion ? 1 : 0.105);
+      });
+    }
+
+    function animateCamera() {
+      if (!resetCamera) return;
+      camera.position.lerp(defaultCamera, 0.085);
+      controls.target.lerp(defaultTarget, 0.085);
+      if (camera.position.distanceTo(defaultCamera) < 0.025 && controls.target.distanceTo(defaultTarget) < 0.01) {
+        camera.position.copy(defaultCamera);
+        controls.target.copy(defaultTarget);
+        resetCamera = false;
+      }
+    }
+
+    function render() {
+      const delta = clock.getDelta();
+      const elapsed = clock.elapsedTime;
+      animateMechanics(elapsed * 1000, delta);
+      animateExplosion();
+      animateCamera();
+      controls.update();
+      updateTooltipPosition();
+      composer.render();
+      requestAnimationFrame(render);
+    }
+
+    requestAnimationFrame(function() {
+      loading.classList.add("done");
+      render();
+    });
+  </script>
+</body>
+</html>
