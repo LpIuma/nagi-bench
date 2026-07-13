@@ -30,14 +30,13 @@ One-shot LLM eval cases by NAGI STUDIO: same prompt, different model x harness x
 
 | Model | Vendor | Harness x Effort | Runs |
 |---|---|---|---|
-| Claude Fable 5 | Anthropic | Claude Web App · Max<br>Claude Code · Max<br>Claude Code · xhigh<br>Cursor · High | 07 |
-| Claude Opus 4.8 | Anthropic | Claude Code · Max | 05 |
+| Claude Fable 5 | Anthropic | Claude Web App · Max<br>Claude Code · High<br>Claude Code · Max<br>Claude Code · xhigh<br>Cursor · High | 08 |
+| Claude Opus 4.8 | Anthropic | Claude Code · Max | 06 |
 | Claude Opus 4.7 | Anthropic | Claude Code · Max<br>Cursor · Max | 05 |
 | Claude Opus 4.6 | Anthropic | Claude Code · Max<br>Cursor · Max | 04 |
 | Claude Opus 4.5 | Anthropic | Cursor · Thinking | 02 |
 | Claude Sonnet 4.6 | Anthropic | Claude Code · Max<br>Cursor · High | 03 |
 | Claude Haiku 4.5 | Anthropic | Claude Code · Default | 02 |
-| GLM-5.1 | Zhipu AI | ZCode · Max | 01 |
 | GPT-5.6-Sol | OpenAI | Codex CLI · ultra | 07 |
 | GPT-5.6-Terra | OpenAI | Codex CLI · ultra | 03 |
 | GPT-5.5 Pro | OpenAI | ChatGPT Web · Extended Pro | 03 |
@@ -50,8 +49,8 @@ One-shot LLM eval cases by NAGI STUDIO: same prompt, different model x harness x
 | Gemini 3.5 Flash | Google | AntiGravity · High<br>Cursor · Default<br>Google AI Studio · High | 06 |
 | Grok 4.5 | xAI | Grok Build TUI · High | 03 |
 | Grok Build | xAI | Grok Build TUI · Max | 02 |
-| Nex-N2-Pro | Nex-AGI | Claude Code · Max | 02 |
 | Grok 4.3 | xAI | Cursor · Default | 02 |
+| Nex-N2-Pro | Nex-AGI | Claude Code · Max | 02 |
 | Composer 2.5 | Cursor | Cursor · Max<br>Cursor · Default<br>Grok Build TUI · Default | 05 |
 | Mistral Medium 3.5 | Mistral AI | Vibe · Thinking | 02 |
 | DeepSeek-V4-Pro | DeepSeek | Claude Code · Max | 03 |
@@ -65,6 +64,7 @@ One-shot LLM eval cases by NAGI STUDIO: same prompt, different model x harness x
 | MiniMax M3 | MiniMax | MiniMax Code Web · Thinking | 02 |
 | MiniMax M2.7 | MiniMax | MiniMax Code Web · Thinking | 01 |
 | GLM-5.2 | Zhipu AI | ZCode · Max | 04 |
+| GLM-5.1 | Zhipu AI | ZCode · Max | 01 |
 | GLM-5 Turbo | Zhipu AI | ZCode · Thinking | 03 |
 | Qwen3.7-Max | Alibaba | Qoder · Default | 02 |
 | Step 3.7 Flash | StepFun | Claude Code · High | 02 |
