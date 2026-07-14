@@ -12,6 +12,14 @@
         "en": "Generated in one shot by Claude Fable 5 (xhigh effort) inside Claude Code. The original output branded the watch as FABLE & CIE with calibre CF-500, which would hint at the model identity in blind Arena mode; this page only replaces those with neutral branding (AUREL & CIE / AC-500), otherwise unmodified."
       },
       "contributor": "Nagi-ovo"
+    },
+    "turf-war": {
+      "note": {
+        "zh": "Claude Fable 5(xhigh 思考档位)在 Claude Code 中用仓库标准中文提示词(仅按案例规则填写文末【本次运行】占位符)一次生成的圈地智能体,未经人工修改。按案例规则策略文件不公开、仅注册运行,由维护者亲自执行,任何 bug 均不修复。自命名「画地为牢」。诊断:激进高产型——平均每次圈地约 42 格(全场最大),敢拖长尾巴换大地盘并主动切对手尾巴,自身几乎不送死,对 baseline 一度打出 1537:25。与同模型 high 档的龟缩(疾风圈地,平均仅 3.9 格)恰成反例:此模型思考档位越高反而越敢打。",
+        "en": "One-shot Turf War agent by Claude Fable 5 (xhigh effort) in Claude Code from the repository's canonical Chinese prompt (only the [This run] placeholders filled per case rules), with no human edits. Per case rules the policy file is unpublished and no bug is ever fixed; this registers the maintainer-executed run. Self-named \"画地为牢\". Diagnosis: aggressive and high-output — captures average ~42 cells each (the largest of any agent), willing to trail far for big territory and to cut the opponent's trail, while almost never suiciding; it once beat a baseline 1537:25. The opposite of the same model's High run (疾风圈地, tiny 3.9-cell loops): for this model, more thinking makes it bolder, not more cautious."
+      },
+      "contributor": "Nagi-ovo",
+      "agentName": "画地为牢"
     }
   }
 }
