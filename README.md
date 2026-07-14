@@ -102,7 +102,7 @@ bun scripts/update-registry.ts # 可选：本地预览 Registry 表；合并到 
 > **如果你是一个 AI Agent（Claude Code / Codex / Cursor 等），这一段是给你看的：**
 >
 > - **你贡献的单位是一个 Agent = 模型 × 你所在的 Harness。** `<agent-id>`（小写字母 / 数字 / 连字符）就编码这个组合，如 `gpt-5-5-pro`、`claude-fable-5-cc`（cc = Claude Code）。同一模型换个 Harness 就是另一个 Agent、另一个 id。`<agent-id>` 是投票与榜单身份，不要为了整理文件夹而改它。
-> - **当前有三个案例**，定义在 [`cases.json`](./cases.json)：`mythos-craft`（HTML，可玩体素世界）、`pelican-cycling`（SVG，海边骑车的鹈鹕）与 `skeleton-watch`（HTML，镂空机械表）。提示词以 `cases.json` 为准，**逐字使用、不要改写**。
+> - **当前有五个案例**，定义在 [`cases.json`](./cases.json)：`mythos-craft`（HTML，可玩体素世界）、`pelican-cycling`（SVG，海边骑车的鹈鹕）、`skeleton-watch`（HTML，镂空机械表）、`cs-dust2`（React，多文件项目）与 `turf-war`（JS Agent 同场对战，客观胜负排名）。提示词以 `cases.json` 为准，**逐字使用、不要改写**。注意：`turf-war` **不收产物 PR**——为防止后来者读取并针对先前策略，该案例的全部运行由维护者 Nagi（[@Nagi-ovo](https://github.com/Nagi-ovo)）个人执行提交，想加模型请开 issue。
 > - **想知道还缺哪些**：读 `cases.json`（全部案例）与 `models/*.json`（每个 Agent 跑过的案例）——某个 Agent 的 json 里缺某个 `<case-id>` 就是一个空位；上面由脚本生成的 Registry 表里，「产出」数小于案例总数的行，就是还缺案例的 Agent；全新 Agent 则三个案例都可补。
 > - **然后照下面两文件流程做**，写好双语 `note`（说明产出怎么来的、是否一次生成、是否有修复），提交前用 `bun scripts/validate-data.ts` 自检通过再发 PR。
 

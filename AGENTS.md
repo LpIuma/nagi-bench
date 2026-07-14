@@ -130,26 +130,25 @@ there is no per-project dependency setup:
   file** that the normal viewer serves verbatim. The anonymity rule above still
   applies: no model / vendor / harness identity anywhere in the code.
 
-## Agent cases — a single JS policy file
+## Agent cases — maintainer-run only
 
 Some cases (marked `kind: "agent"` in `cases.json`, currently `turf-war`) ask
-the model to write a game-playing agent instead of a page. For these your
-artifact is **one plain JavaScript file** at
-`outputs/<artifactDir>/<case-id>.js`:
+the model to write a game-playing agent that battles other models' agents,
+ranked by real wins instead of votes. These cases are **not open for artifact
+PRs**, by design:
 
-- Feed the case prompt to the model **verbatim, one-shot** — no test runs, no
-  iteration, no extra strategy hints of any kind. Extra context beyond the
-  canonical prompt invalidates the run.
-- Save the model's output **as-is**. The file must define `createAgent` at top
-  level (the interface is fully specified in the prompt).
-- The site runs the file inside an instrumented sandbox with a deterministic
-  compute budget; `Math.random`, `Date`, network and imports are blocked. CI
-  smoke-runs one match against a built-in baseline to check API compliance and
-  budget — it does not judge strength.
-- Battles are refereed server-side and ranked by real wins (Bradley-Terry), so
-  there is nothing to screenshot: the CI check is the proof for these cases.
-- The anonymity rule applies as usual: no model / vendor / harness identity in
-  the code or comments.
+- Policy files are deliberately kept off the public repo — if submissions were
+  public, later entrants could read earlier policies and prompt their model to
+  counter them, which breaks the one-shot fairness of the case.
+- All runs are produced by the maintainer, feeding every model the identical
+  canonical prompt one-shot (no test runs, no iteration, no extra hints).
+  Battles are refereed server-side inside an instrumented sandbox with a
+  deterministic compute budget; the browser only replays action logs.
+- The registration in `models/<model-id>.json` (a `runs.<case-id>` entry with
+  the usual bilingual provenance note) is the only public trace; there is no
+  `outputs/` artifact for these cases.
+- Want a model or harness combo included? Open an issue and the maintainer
+  will run it.
 
 ## Review guidelines
 
